@@ -7,7 +7,7 @@
 \usecolortheme{default}
 \usefonttheme{professionalfonts}
 
-% -- Colours --
+% -- Couleurs --
 \definecolor{soapblue}{HTML}{1565C0}
 \definecolor{restgreen}{HTML}{2E7D32}
 \definecolor{graphqlpurple}{HTML}{7B1FA2}
@@ -19,7 +19,7 @@
 \setbeamercolor{palette secondary}{bg=accentblue!80, fg=white}
 \setbeamercolor{palette tertiary}{bg=accentblue!60, fg=white}
 \setbeamercolor{structure}{fg=accentblue}
-\setbeamercolor{title}{fg=accentblue}
+\setbeamercolor{title}{fg=white}
 \setbeamercolor{frametitle}{fg=accentblue, bg=white}
 \setbeamercolor{block title}{bg=accentblue, fg=white}
 \setbeamercolor{block body}{bg=accentblue!5, fg=black}
@@ -30,7 +30,7 @@
 \setbeamertemplate{footline}{%
   \leavevmode\hbox{%
     \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1ex,left]{footline}%
-      \hspace{1em}\scriptsize RetailSync -- Comparative API Study
+      \hspace{1em}\scriptsize RetailSync -- Comparaison d'APIs
     \end{beamercolorbox}%
     \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1ex,right]{footline}%
       \scriptsize\insertframenumber\,/\,\inserttotalframenumber\hspace{1em}
@@ -65,9 +65,9 @@
 % DOCUMENT
 % ======================================================================
 \title[RetailSync]{\textbf{RetailSync}}
-\subtitle{A Comparative Architectural Study of\\SOAP, REST, GraphQL, and gRPC\\in a Global Retail Ecosystem}
-\author{Service-Oriented Computing Module}
-\date{February 2026}
+\subtitle{Une première application pour comparer\\SOAP, REST, GraphQL et gRPC\\dans un système e-commerce}
+\author{Module d'Architecture Logicielle}
+\date{Février 2026}
 \institute{}
 
 \begin{document}
@@ -82,13 +82,13 @@
 % ======================================================================
 % AGENDA
 % ======================================================================
-\begin{frame}{Agenda}
+\begin{frame}{Au programme}
   \begin{enumerate}
-    \item \textbf{Context and Motivation} -- Why four paradigms in one system? \hfill \textit{2 min}
-    \item \textbf{System Architecture} -- Master diagram and data flows \hfill \textit{3 min}
-    \item \textbf{Paradigm Deep Dive} -- Contract, sequence, and trade-offs \hfill \textit{6 min}
-    \item \textbf{Cross-Paradigm Analysis} -- Decision tree, payload, aggregation \hfill \textit{5 min}
-    \item \textbf{Comparison Matrix and Takeaways} \hfill \textit{2 min}
+    \item \textbf{Le Contexte} -- Pourquoi utiliser 4 APIs différentes ? \hfill \textit{2 min}
+    \item \textbf{L'Architecture} -- Comment tout se connecte \hfill \textit{3 min}
+    \item \textbf{Plongée dans les 4 APIs} -- Démonstrations et avantages \hfill \textit{6 min}
+    \item \textbf{Comparaison Pratique} -- Taille des messages et décisions \hfill \textit{5 min}
+    \item \textbf{Conclusion} -- Ce qu'il faut retenir \hfill \textit{2 min}
   \end{enumerate}
   \vfill
   \centering
@@ -98,40 +98,39 @@
 % ======================================================================
 % SECTION 1: CONTEXT
 % ======================================================================
-\section{Context and Motivation}
+\section{1. Le Contexte}
 
-\begin{frame}{The Retail Integration Problem}
-  A global retail brand must communicate with \textbf{four fundamentally different stakeholders}, each imposing distinct technical constraints:
+\begin{frame}{Le problème : 4 besoins très différents}
+  Nous simulons une chaîne de magasins qui doit communiquer avec \textbf{quatre acteurs différents}. Chacun a ses propres contraintes :
   \vspace{0.3em}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{block}{\soapbadge~Manufacturers}
-        Legacy ERP systems (SAP, Oracle) that expose SOAP/WS-* interfaces natively. Imposing REST would require an additional translation layer.
+      \begin{block}{\soapbadge~Les Usines (Achats B2B)}
+        Vieux systèmes informatiques (SAP) très stricts. On a besoin d'une garantie totale sur le format des commandes, sans erreur.
       \end{block}
-      \begin{block}{\graphqlbadge~Store Managers}
-        Internal dashboards aggregating inventory, orders, and robot telemetry. A REST-based approach requires $O(N)$ calls per store.
+      \begin{block}{\graphqlbadge~Le(la) Gérant(e) (Tableau de bord)}
+        A besoin de voir toutes les infos (stock, commandes) sur un seul écran, sans faire 10 requêtes différentes qui ralentissent le site.
       \end{block}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{block}{\restbadge~Partner Boutiques}
-        Third-party developers need the simplest integration possible. HTTP~+~JSON, no SDK, no code generation step.
+      \begin{block}{\restbadge~Les Boutiques (Partenaires)}
+        Veulent gérer leur stock facilement avec n'importe quel langage de programmation. Il faut faire très simple.
       \end{block}
-      \begin{block}{\grpcbadge~Warehouse Robots}
-        100+ robots streaming telemetry at 10~msg/sec. Bandwidth and latency constraints prohibit text-based formats.
+      \begin{block}{\grpcbadge~Les Robots (Dans l'entrepôt)}
+        Envoient leur position en continu (10 fois par seconde). Il faut que le message soit microscopique pour ne pas bloquer le réseau.
       \end{block}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Methodology: Contract-First Design}
+\begin{frame}{Le code vient après}
   \begin{columns}[T]
     \begin{column}{0.55\textwidth}
-      Every module follows a strict contract-first workflow:
+      Pour chaque API de ce projet, nous avons suivi une règle stricte :
       \begin{enumerate}
-        \item \textbf{Define the contract} -- WSDL, OpenAPI, SDL, or Protobuf -- written \textit{before} any implementation code.
-        \item \textbf{Implement the mock server} -- returns realistic data conforming strictly to the contract.
-        \item \textbf{Validate with automated tests} -- Postman collection with status code and payload assertions.
-        \item \textbf{Analyse trade-offs} -- document what was gained and what was sacrificed for each choice.
+        \item \textbf{Définir le ``Contrat''} -- On écrit d'abord un fichier qui décrit comment l'API va marcher.
+        \item \textbf{Coder le serveur} -- Le code est créé à partir du contrat, jamais l'inverse.
+        \item \textbf{Tester avec Postman} -- Pour vérifier que ça fonctionne bien !
       \end{enumerate}
     \end{column}
     \begin{column}{0.42\textwidth}
@@ -140,7 +139,7 @@
         \scriptsize
         \begin{tabular}{ll}
           \toprule
-          \textbf{Module} & \textbf{Contract File} \\
+          \textbf{Module} & \textbf{Le fichier Contrat} \\
           \midrule
           \textcolor{soapblue}{SOAP} & \texttt{PurchaseOrder.wsdl} \\
           \textcolor{restgreen}{REST} & \texttt{openapi.yaml} \\
@@ -150,8 +149,8 @@
         \end{tabular}
       \end{table}
       \vspace{0.5em}
-      \begin{alertblock}{Principle}
-        The contract is the shared source of truth between producer and consumer. Code is derived from the contract, never the reverse.
+      \begin{alertblock}{Idée à retenir}
+        En séparant la règle (le contrat) du code, l'application est beaucoup plus facile à modifier et tester.
       \end{alertblock}
     \end{column}
   \end{columns}
@@ -160,9 +159,9 @@
 % ======================================================================
 % SECTION 2: ARCHITECTURE
 % ======================================================================
-\section{System Architecture}
+\section{2. L'Architecture}
 
-\begin{frame}{RetailSync -- System Architecture}
+\begin{frame}{Vue d'ensemble du Projet}
   \begin{center}
     \includegraphics[width=0.88\textwidth]{01_master_architecture.png}
   \end{center}
@@ -171,26 +170,23 @@
 % ======================================================================
 % SECTION 3: DEEP DIVE
 % ======================================================================
-\section{Paradigm Deep Dive}
+\section{3. Plongée dans les 4 APIs}
 
 % -- SOAP --
-\begin{frame}{\soapbadge~B2B Procurement Service -- Port 8001}
+\begin{frame}{\soapbadge~Module SOAP -- Commandes aux usines}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Contract:} \texttt{PurchaseOrder.wsdl}\\
-      \textbf{Framework:} Spyne (Python SOAP)\\[0.8em]
-      \textbf{Justification:}
+      \textbf{Format :} Lourd mais ultra sécurisé (XML)\\[0.8em]
+      \textbf{Pourquoi on l'a choisi :}
       \begin{itemize}
-        \item \textbf{XSD validation} enforces field types, ordering, and cardinality at the wire level.
-        \item \textbf{WSDL code generation} -- both parties generate stubs from one file.
-        \item \textbf{WS-Security} provides message-level encryption, not just transport-level TLS.
+        \item \textbf{Validation parfaite :} Impossible d'oublier un champ grâce au fichier WSDL qui vérifie tout.
+        \item \textbf{Format d'entreprise :} C'est ce que les gros logiciels SAP/Oracle attendent.
       \end{itemize}
       \vspace{0.5em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Strict type safety} & \sacrificed{Human readability} \\
-        \gained{Formal contract} & \sacrificed{Heavy toolkits} \\
-        \gained{WS-Security} & \sacrificed{Parsing performance} \\
+        \gained{Erreurs impossibles} & \sacrificed{XML dur à lire} \\
+        \gained{Très sécurisé} & \sacrificed{Outils un peu vieux} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -200,23 +196,20 @@
 \end{frame}
 
 % -- REST --
-\begin{frame}{\restbadge~Partner Marketplace API -- Port 8002}
+\begin{frame}{\restbadge~Module REST -- Gestion de l'inventaire}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Contract:} \texttt{openapi.yaml} (OpenAPI 3.0)\\
-      \textbf{Framework:} FastAPI + Pydantic\\[0.8em]
-      \textbf{Justification:}
+      \textbf{Format :} Le grand classique du net (JSON)\\[0.8em]
+      \textbf{Pourquoi on l'a choisi :}
       \begin{itemize}
-        \item \textbf{Zero integration barrier} -- any HTTP client, any language, no SDK required.
-        \item \textbf{HTTP caching} -- GET responses are cacheable by CDNs and reverse proxies.
-        \item \textbf{Semantic verbs} -- GET, PATCH, DELETE are self-documenting.
+        \item \textbf{Universel :} Tout le monde sait faire une requête GET ou PATCH.
+        \item \textbf{Très facile à mettre en place :} Aucun fichier complexe à générer. Pas besoin d'outils compliqués.
       \end{itemize}
       \vspace{0.5em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Universal adoption} & \sacrificed{No schema enforcement} \\
-        \gained{HTTP caching} & \sacrificed{Under-fetching ($N$+1)} \\
-        \gained{Stateless scaling} & \sacrificed{No native streaming} \\
+        \gained{Hyper simple} & \sacrificed{Pas de validation forte} \\
+        \gained{Rapide à coder} & \sacrificed{Vieux design par requêtes séparées} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -226,23 +219,20 @@
 \end{frame}
 
 % -- GraphQL --
-\begin{frame}{\graphqlbadge~Manager Dashboard -- Port 8003}
+\begin{frame}{\graphqlbadge~Module GraphQL -- Le Tableau de Bord}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Contract:} \texttt{schema.graphql} (SDL)\\
-      \textbf{Framework:} Strawberry + FastAPI\\[0.8em]
-      \textbf{Justification:}
+      \textbf{Format :} Flexible (JSON)\\[0.8em]
+      \textbf{Pourquoi on l'a choisi :}
       \begin{itemize}
-        \item \textbf{Eliminates under-fetching} -- nested queries collapse $3 \times N$ REST calls into one POST.
-        \item \textbf{Client-driven shape} -- each widget requests only the fields it needs.
-        \item \textbf{Aggregator pattern} -- frontend is decoupled from backend topology.
+        \item \textbf{Requête unique :} Parfait pour une interface web qui veut charger plein d'informations à la fois.
+        \item \textbf{À la carte :} On ne télécharge que les informations qu'on veut afficher sur l'écran.
       \end{itemize}
       \vspace{0.5em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Single request} & \sacrificed{No HTTP caching} \\
-        \gained{Client-driven shape} & \sacrificed{Query complexity} \\
-        \gained{Backend-agnostic} & \sacrificed{Resolver overhead} \\
+        \gained{Une seule requête HTTP} & \sacrificed{Nouveau concept à apprendre} \\
+        \gained{Économise internet} & \sacrificed{Difficile de mettre en cache} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -252,23 +242,20 @@
 \end{frame}
 
 % -- gRPC --
-\begin{frame}{\grpcbadge~Warehouse Automation -- Port 50051}
+\begin{frame}{\grpcbadge~Module gRPC -- Les Robots de l'Entrepôt}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Contract:} \texttt{warehouse.proto} (Protocol Buffers)\\
-      \textbf{Framework:} grpcio + protobuf\\[0.8em]
-      \textbf{Justification:}
+      \textbf{Format :} Binaire ultra léger (Protobuf)\\[0.8em]
+      \textbf{Pourquoi on l'a choisi :}
       \begin{itemize}
-        \item \textbf{Binary serialisation} -- Protobuf encodes a telemetry message in $\sim$50~B vs $\sim$1~KB for XML.
-        \item \textbf{Bi-directional streaming} -- commands and telemetry flow simultaneously on one HTTP/2 connection.
-        \item \textbf{Compile-time types} -- field errors caught before deployment via code generation.
+        \item \textbf{Microscopique :} Un message fait 40 octets (contre 250 en REST). On gagne 6x de vitesse!
+        \item \textbf{Temps réel :} Le serveur et le robot se parlent en continu sans refaire de nouvelle connexion (streaming bidirectionnel).
       \end{itemize}
       \vspace{0.5em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{20x smaller payloads} & \sacrificed{Not human-readable} \\
-        \gained{Bi-directional stream} & \sacrificed{No browser support} \\
-        \gained{Compile-time safety} & \sacrificed{Smaller ecosystem} \\
+        \gained{Ultra rapide / léger} & \sacrificed{Illisible sans outil} \\
+        \gained{Streaming réel} & \sacrificed{Difficile pour le web} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -280,78 +267,73 @@
 % ======================================================================
 % SECTION 4: CROSS-PARADIGM ANALYSIS
 % ======================================================================
-\section{Cross-Paradigm Analysis}
+\section{4. Comparaison Pratique}
 
-\begin{frame}{Protocol Selection Decision Tree}
+\begin{frame}{Pourquoi telle ou telle API ? (Arbre de décision)}
   \begin{center}
     \includegraphics[width=0.82\textwidth]{06_decision_tree.png}
   \end{center}
   \vspace{0.3em}
-  \centering\small\textit{REST is the architectural default. Every deviation is justified by a concrete constraint.}
+  \centering\small\textit{REST est le choix par défaut. On change seulement si on a un vrai problème technique à régler.}
 \end{frame}
 
-\begin{frame}{Payload Overhead Comparison}
+\begin{frame}{Comparatif de taille des messages}
   \begin{center}
     \includegraphics[width=0.85\textwidth]{08_payload_comparison.png}
   \end{center}
   \vspace{0.3em}
-  \centering\small\textit{Same business object encoded in three wire formats: 1\,KB (SOAP) $\rightarrow$ 200\,B (REST) $\rightarrow$ 50\,B (gRPC).}
+  \centering\small\textit{Pour envoyer la même information au système : 1 KB (SOAP) $\rightarrow$ 200 B (REST) $\rightarrow$ 50 B (gRPC).}
 \end{frame}
 
-\begin{frame}{GraphQL Aggregator Pattern}
+\begin{frame}{GraphQL, le "Chef d'Orchestre"}
   \begin{center}
     \includegraphics[width=0.82\textwidth]{07_aggregator_pattern.png}
   \end{center}
   \vspace{0.3em}
-  \centering\small\textit{The frontend sees a single typed schema. Backend protocol heterogeneity is invisible to the client.}
+  \centering\small\textit{Pour le développeur du site web, les différences entre SOAP, REST et gRPC sont invisibles. GraphQL unit tout !}
 \end{frame}
 
 % ======================================================================
 % SECTION 5: COMPARISON MATRIX
 % ======================================================================
-\section{Comparison Matrix and Takeaways}
+\section{5. Conclusion}
 
-\begin{frame}{Final Comparison Matrix}
+\begin{frame}{Tableau de Synthèse}
   \begin{table}
     \centering
     \scriptsize
     \renewcommand{\arraystretch}{1.3}
     \begin{tabular}{l >{\color{soapblue}}c >{\color{restgreen}}c >{\color{graphqlpurple}}c >{\color{grpcorange}}c}
       \toprule
-      \textbf{Criterion} & \textbf{SOAP} & \textbf{REST} & \textbf{GraphQL} & \textbf{gRPC} \\
+      \textbf{Critères} & \textbf{SOAP} & \textbf{REST} & \textbf{GraphQL} & \textbf{gRPC} \\
       \midrule
-      Data format & XML & JSON & JSON & Protobuf \\
-      Transport & HTTP/1.1 & HTTP/1.1 & HTTP/1.1 & HTTP/2 \\
-      Contract & WSDL (mandatory) & OpenAPI (optional) & SDL Schema & .proto (mandatory) \\
-      Type safety & Strict (XSD) & Runtime (Pydantic) & Runtime (resolvers) & Compile-time \\
-      Streaming & No & No & Subscriptions & Bi-directional \\
-      Caching & No & Yes (HTTP GET) & No (POST) & No \\
-      Browser support & Via AJAX & Native & Native & gRPC-Web proxy \\
-      Best suited for & Formal B2B & Public APIs & Aggregation & Machine-to-machine \\
+      Format & XML & JSON & JSON & Protobuf \\
+      Connexion & HTTP/1.1 & HTTP/1.1 & HTTP/1.1 & HTTP/2 \\
+      Sécurité format & Très stricte (WSDL) & Moyenne & Flexible & Stricte (.proto) \\
+      Vitesse/Taille & Très lent (Lourd) & Basique & Economique & Ultra rapide (Léger) \\
+      Streaming Direct & Non & Non & Partiel & Oui (Dans les 2 sens) \\
+      Le Meilleur Pour & Tâches Critiques/B2B & Public et Simple & Sites Web (Affichage) & Robots et Temps Réel \\
       \bottomrule
     \end{tabular}
   \end{table}
   \vspace{0.5em}
-  \centering\small There is no universally superior paradigm. Each cell represents a design decision with measurable consequences.
+  \centering\small Il n'y a pas d'API parfaite. Il n'y a que le \textbf{bon type d'API pour le bon besoin}.
 \end{frame}
 
-\begin{frame}{Key Takeaways}
+\begin{frame}{Que faut-il retenir de ce POC ?}
   \begin{enumerate}
-    \item \textbf{No universal winner.} Each paradigm excels within its specific operational constraints. The architecture must be polyglot by design.
+    \item \textbf{Il n'y a pas de gagnant final.} Chaque API fait son travail parfaitement en fonction du besoin. L'avenir est de savoir les utiliser au bon endroit.
 
-    \item \textbf{Contract-first is non-negotiable.} Whether WSDL, OpenAPI, SDL, or Protobuf, the contract is the shared source of truth between distributed teams.
+    \item \textbf{REST est notre valeur sûre.} C'est le choix facile et intelligent pour 80\% des projets classiques.
 
-    \item \textbf{REST as default, deviate with justification.} Every non-REST technology choice in RetailSync is driven by a concrete limitation that REST cannot address.
+    \item \textbf{Le contrat avant le code.} Créer des règles (fichiers wsdl, proto, openapi) rend l'équipe de développement beaucoup plus autonome et réduit les erreurs.
 
-    \item \textbf{GraphQL complements, it does not replace.} It acts as an aggregation gateway over heterogeneous backends. Both REST and GraphQL coexist by design.
+    \item \textbf{GraphQL n'efface pas REST.} Il se met par-dessus, pour rendre l'interface web plus simple à utiliser sans tout casser derrière.
 
-    \item \textbf{The cost of the wrong paradigm is measurable.} At 100 robots $\times$ 10~msg/sec, the difference between 1~KB~(SOAP) and 50~B~(gRPC) is the difference between network saturation and idle capacity.
+    \item \textbf{La vitesse gRPC est indispensable.} Pour des machines comme les robots travaillant 10 fois par seconde, SOAP ferait s'écrouler le réseau wifi de l'entrepôt, gRPC le laisse respirer.
   \end{enumerate}
 
   \vspace{0.5em}
-  \begin{block}{Final Reflection}
-    Architectural maturity is not knowing the latest framework. It is knowing when \textit{not} to use it.
-  \end{block}
 \end{frame}
 
 % ======================================================================
@@ -360,8 +342,8 @@
 \begin{frame}[plain]
   \centering
   \vspace{2em}
-  {\LARGE\textbf{Thank You}}\\[1.5em]
-  {\large Questions?}\\[2em]
+  {\LARGE\textbf{Merci pour votre attention !}}\\[1.5em]
+  {\large Avez-vous des questions ?}\\[2em]
   \soapbadge~\texttt{:8001}\quad
   \restbadge~\texttt{:8002}\quad
   \graphqlbadge~\texttt{:8003}\quad

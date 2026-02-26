@@ -1,17 +1,17 @@
 {
     "info": {
         "_postman_id": "f1e2d3c4-b5a6-4789-0123-456789abcdef",
-        "name": "RetailSync - Full Lifecycle",
-        "description": "# RetailSync - Postman Collection\n\nThis collection demonstrates the full lifecycle of the RetailSync retail supply chain across three HTTP-based API paradigms (REST, GraphQL, SOAP). Each request includes automated test scripts that validate status codes, response times, and payload correctness.\n\n## How to Run\n\n1. Import this collection and the `RetailSync_Environment.json` environment into Postman.\n2. Start all three servers (see README.md for commands).\n3. Select the **RetailSync - Local** environment in the top-right dropdown.\n4. Click **Run Collection** to execute all requests sequentially. All tests should pass.\n\n## gRPC Module (Warehouse Logistics)\n\nPostman handles gRPC through a dedicated interface, not standard HTTP requests. To test the gRPC Warehouse Automation service:\n\n### Step 1: Create a gRPC Request\n- Click **New** > **gRPC Request** in Postman.\n- Enter the server URL: `localhost:50051` (no `http://` prefix).\n\n### Step 2: Import the Proto File\n- In the **Service definition** section, click **Import .proto file**.\n- Select `logistics/contracts/warehouse.proto` from the project directory.\n- Postman will parse the file and list the available RPCs.\n\n### Step 3: Invoke GetRobotStatus (Unary)\n- Select **WarehouseAutomation / GetRobotStatus** from the method dropdown.\n- In the **Message** tab, enter:\n```json\n{\n  \"robot_id\": \"ROBOT-P01-A\"\n}\n```\n- Click **Invoke**. You should receive a telemetry snapshot with position, battery level, and status.\n\n### Step 4: Invoke StreamTelemetry (Bi-directional Streaming)\n- Select **WarehouseAutomation / StreamTelemetry** from the method dropdown.\n- Postman will show the streaming interface with a message composer.\n- Enter the first command message:\n```json\n{\n  \"robot_id\": \"ROBOT-P01-A\",\n  \"command\": \"COMMAND_MOVE\",\n  \"target\": { \"x\": 15.0, \"y\": 12.0, \"z\": 0.0 },\n  \"timestamp_ms\": 1740564000000\n}\n```\n- Click **Send** to push the message into the stream.\n- The server will respond with three telemetry events showing the robot moving toward the target coordinates.\n- Send additional commands (COMMAND_PICK, COMMAND_CHARGE) to see the full telemetry cycle.\n- Click **End streaming** when finished.",
+        "name": "RetailSync - Cycle Complet",
+        "description": "# RetailSync - Collection Postman\n\nCette collection montre le cycle complet de RetailSync à travers les 3 APIs web (REST, GraphQL, SOAP). Chaque requête contient des tests automatiques pour vérifier que tout fonctionne.\n\n## Comment l'utiliser\n\n1. Importez cette collection et l'environnement `RetailSync_Environment.json` dans Postman.\n2. Lancez les 3 serveurs (voir README.md).\n3. Sélectionnez l'environnement **RetailSync - Local** en haut à droite.\n4. Cliquez sur **Run Collection** pour tout tester d'un coup.\n\n## Module gRPC (Entrepôt)\n\nPostman gère gRPC séparément. Pour le tester :\n\n### Étape 1 : Créer une requête gRPC\n- Cliquez sur **New** > **gRPC Request**.\n- URL du serveur : `localhost:50051` (sans `http://`).\n\n### Étape 2 : Importer le fichier Proto\n- Dans **Service definition**, cliquez sur **Import .proto file**.\n- Choisissez `logistics/contracts/warehouse.proto`.\n\n### Étape 3 : Tester GetRobotStatus (Une seule réponse)\n- Choisissez **WarehouseAutomation / GetRobotStatus**.\n- Dans l'onglet **Message**, tapez :\n```json\n{\n  \"robot_id\": \"ROBOT-P01-A\"\n}\n```\n- Cliquez sur **Invoke**.\n\n### Étape 4 : Tester StreamTelemetry (En continu)\n- Choisissez **WarehouseAutomation / StreamTelemetry**.\n- Tapez le premier message de commande :\n```json\n{\n  \"robot_id\": \"ROBOT-P01-A\",\n  \"command\": \"COMMAND_MOVE\",\n  \"target\": { \"x\": 15.0, \"y\": 12.0, \"z\": 0.0 },\n  \"timestamp_ms\": 1740564000000\n}\n```\n- Cliquez sur **Send**.\n- Le serveur va répondre avec 3 messages de position. Cliquez sur **End streaming** pour terminer.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
         {
-            "name": "Module 1: REST - Partner Marketplace",
-            "description": "Tests the REST API used by third-party boutiques to synchronise inventory. Demonstrates GET (resource retrieval) and PATCH (partial update) operations.",
+            "name": "Module 1 : REST - Boutiques Partenaires",
+            "description": "Teste l'API REST utilisée par les boutiques pour gérer leur stock. Démontre les requêtes GET (lecture) et PATCH (mise à jour simple).",
             "item": [
                 {
-                    "name": "GET - List All Inventory",
+                    "name": "GET - Voir tout l'inventaire",
                     "request": {
                         "method": "GET",
                         "header": [],
@@ -24,7 +24,7 @@
                                 "inventory"
                             ]
                         },
-                        "description": "Retrieves the full inventory catalogue. Demonstrates REST's resource-oriented design: a GET on the collection endpoint returns all items."
+                        "description": "Récupère tout le catalogue. Montre que REST est simple : un GET sur la collection renvoie tous les objets."
                     },
                     "response": [],
                     "event": [
@@ -73,7 +73,7 @@
                     ]
                 },
                 {
-                    "name": "GET - Single Item by SKU",
+                    "name": "GET - Un seul produit",
                     "request": {
                         "method": "GET",
                         "header": [],
@@ -87,7 +87,7 @@
                                 "{{current_sku}}"
                             ]
                         },
-                        "description": "Retrieves a single inventory item by its SKU. The SKU is a path parameter because it is part of the resource's identity -- a core REST principle."
+                        "description": "Récupère un seul produit. Le nom du produit (SKU) fait partie de l'URL, c'est le principe central de REST."
                     },
                     "response": [],
                     "event": [
@@ -124,7 +124,7 @@
                     ]
                 },
                 {
-                    "name": "PATCH - Update Stock Quantity",
+                    "name": "PATCH - Mettre à jour la quantité",
                     "request": {
                         "method": "PATCH",
                         "header": [
@@ -147,7 +147,7 @@
                                 "{{current_sku}}"
                             ]
                         },
-                        "description": "Partially updates an inventory item. Uses PATCH rather than PUT because only the changed fields are sent -- a REST best practice for partial modifications."
+                        "description": "Met à jour une partie de l'objet. On utilise PATCH (et non PUT) car on n'envoie que la quantité qui change, pour économiser internet."
                     },
                     "response": [],
                     "event": [
@@ -182,11 +182,11 @@
             ]
         },
         {
-            "name": "Module 2: GraphQL - Manager Dashboard",
-            "description": "Tests the GraphQL aggregator gateway used by store managers. A single query fetches stores with nested inventory and orders, demonstrating how GraphQL solves the under-fetching problem.",
+            "name": "Module 2 : GraphQL - Tableau de bord du Gérant",
+            "description": "Teste l'API GraphQL. Une seule requête permet de récupérer les infos des magasins, leur stock, et leurs commandes en même temps.",
             "item": [
                 {
-                    "name": "Query - Stores with Inventory and Orders",
+                    "name": "Requête - Magasins, Stock et Commandes",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -208,7 +208,7 @@
                                 "graphql"
                             ]
                         },
-                        "description": "Sends a single GraphQL query that fetches all stores with their nested inventory and orders. This replaces what would be multiple sequential REST calls, demonstrating the aggregator pattern."
+                        "description": "Envoie une seule requête GraphQL qui récupère absolument toutes les informations liées au magasin."
                     },
                     "response": [],
                     "event": [
@@ -258,7 +258,7 @@
                     ]
                 },
                 {
-                    "name": "Query - Dashboard Summary (KPIs)",
+                    "name": "Requête - Statistiques globales",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -280,7 +280,7 @@
                                 "graphql"
                             ]
                         },
-                        "description": "Fetches aggregated KPIs across all stores in a single query. Demonstrates cross-entity aggregation that would require multiple REST endpoints and client-side computation."
+                        "description": "Récupère les statistiques globales (KPI) et les produits en rupture de stock en une seule requête."
                     },
                     "response": [],
                     "event": [
@@ -317,11 +317,11 @@
             ]
         },
         {
-            "name": "Module 3: SOAP - B2B Procurement",
-            "description": "Tests the SOAP procurement service used for B2B purchase orders with legacy manufacturers. Sends a full XML envelope and validates the structured response.",
+            "name": "Module 3 : SOAP - Commandes Usines B2B",
+            "description": "Teste le service SOAP très ancien utilisé pour envoyer des commandes formelles aux usines.",
             "item": [
                 {
-                    "name": "SubmitOrder - Purchase Order to Manufacturer",
+                    "name": "SubmitOrder - Envoyer la commande à l'usine",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -344,7 +344,7 @@
                                 "{{baseUrl_soap}}"
                             ]
                         },
-                        "description": "Sends a SOAP XML envelope containing a purchase order with two line items to the procurement service. The XML structure follows the WSDL contract defined in PurchaseOrder.wsdl."
+                        "description": "Envoie l'imposant fichier XML qui contient la commande, exactement comme l'usine (et le contrat WSDL) l'attend."
                     },
                     "response": [],
                     "event": [
