@@ -6,11 +6,11 @@
 openapi: "3.0.3"
 
 info:
-  title: OmniChain Retail Mesh - Partner Marketplace API
+  title: RetailSync - Partner Marketplace API
   version: "1.0.0"
   description: |
     REST API for third-party boutiques to synchronise their inventory
-    with the OmniChain retail marketplace.
+    with the RetailSync retail marketplace.
 
 servers:
   - url: http://localhost:8002

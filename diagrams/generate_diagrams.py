@@ -1,5 +1,5 @@
 """
-Generates all presentation diagrams for the OmniChain Retail Mesh project.
+Generates all presentation diagrams for the RetailSync project.
 
 Produces 5 high-resolution PNG files in the diagrams/ directory:
   01_master_architecture.png
@@ -92,7 +92,7 @@ def generate_master_architecture():
     ax.set_aspect("equal")
 
     # Title
-    ax.text(6, 8.5, "OmniChain Retail Mesh — System Architecture",
+    ax.text(6, 8.5, "RetailSync — System Architecture",
             **TITLE_FONT, ha="center", va="center", color="#212121")
     ax.plot([1, 11], [8.15, 8.15], color="#BDBDBD", lw=0.8)
 
@@ -274,7 +274,7 @@ def generate_soap_sequence():
     sd = SequenceDiagram(
         "SOAP — B2B Procurement Flow",
         [("Manufacturer ERP", "(SAP / Oracle)"),
-         ("OmniChain Gateway", ""),
+         ("RetailSync Gateway", ""),
          ("ProcurementService", ":8001 (Spyne)")],
         "soap", fig_height=10
     )
@@ -444,7 +444,7 @@ def generate_decision_tree():
     ax.set_ylim(-0.5, 11)
     ax.axis("off")
 
-    ax.text(8, 10.5, "OmniChain Protocol Selection Logic",
+    ax.text(8, 10.5, "RetailSync Protocol Selection Logic",
             **TITLE_FONT, ha="center", va="center", color="#212121")
     ax.plot([2, 14], [10.15, 10.15], color="#BDBDBD", lw=0.8)
 
@@ -797,7 +797,7 @@ def generate_payload_comparison():
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  Generating OmniChain presentation diagrams...")
+    print("  Generating RetailSync presentation diagrams...")
     print("=" * 60)
 
     generate_master_architecture()

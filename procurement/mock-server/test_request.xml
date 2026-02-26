@@ -9,7 +9,7 @@
 -->
 <soapenv:Envelope
     xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-    xmlns:proc="http://omnichain.retail/procurement">
+    xmlns:proc="http://retailsync.retail/procurement">
     <soapenv:Header/>
     <soapenv:Body>
         <proc:SubmitOrder>

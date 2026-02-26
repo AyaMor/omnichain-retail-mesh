@@ -9,14 +9,14 @@
 <definitions
     xmlns="http://schemas.xmlsoap.org/wsdl/"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-    xmlns:tns="http://omnichain.retail/procurement"
+    xmlns:tns="http://retailsync.retail/procurement"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://omnichain.retail/procurement"
+    targetNamespace="http://retailsync.retail/procurement"
     name="ProcurementService">
 
     <!-- Types: XML Schema definitions for Purchase Orders -->
     <types>
-        <xsd:schema targetNamespace="http://omnichain.retail/procurement">
+        <xsd:schema targetNamespace="http://retailsync.retail/procurement">
 
             <xsd:complexType name="OrderItem">
                 <xsd:sequence>
@@ -111,7 +111,7 @@
         <soap:binding style="document"
                       transport="http://schemas.xmlsoap.org/soap/http"/>
         <operation name="SubmitOrder">
-            <soap:operation soapAction="http://omnichain.retail/procurement/SubmitOrder"/>
+            <soap:operation soapAction="http://retailsync.retail/procurement/SubmitOrder"/>
             <input>
                 <soap:body use="literal"/>
             </input>
@@ -124,7 +124,7 @@
     <!-- Service endpoint -->
     <service name="ProcurementService">
         <documentation>
-            OmniChain Retail Mesh - B2B Procurement Service (Phase 1 mock).
+            RetailSync - B2B Procurement Service (Phase 1 mock).
         </documentation>
         <port name="ProcurementPort" binding="tns:ProcurementBinding">
             <soap:address location="http://localhost:8001/procurement"/>

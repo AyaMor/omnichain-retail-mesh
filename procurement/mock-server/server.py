@@ -25,7 +25,7 @@ from datetime import date, timedelta
 
 class OrderItem(ComplexModel):
     """A single line-item in a purchase order."""
-    __namespace__ = "http://omnichain.retail/procurement"
+    __namespace__ = "http://retailsync.retail/procurement"
 
     sku              = Unicode(min_occurs=1, max_occurs=1)
     product_name     = Unicode()
@@ -36,7 +36,7 @@ class OrderItem(ComplexModel):
 
 class PurchaseOrder(ComplexModel):
     """Full purchase order sent to the manufacturer."""
-    __namespace__ = "http://omnichain.retail/procurement"
+    __namespace__ = "http://retailsync.retail/procurement"
 
     order_id        = Unicode()
     buyer_org_id    = Unicode()
@@ -48,7 +48,7 @@ class PurchaseOrder(ComplexModel):
 
 class OrderResponse(ComplexModel):
     """Confirmation returned by the manufacturer."""
-    __namespace__ = "http://omnichain.retail/procurement"
+    __namespace__ = "http://retailsync.retail/procurement"
 
     confirmation_id    = Unicode()
     status             = Unicode()
@@ -94,7 +94,7 @@ class ProcurementService(Service):
 
 application = Application(
     services=[ProcurementService],
-    tns="http://omnichain.retail/procurement",
+    tns="http://retailsync.retail/procurement",
     name="ProcurementService",
     in_protocol=Soap11(validator="lxml"),
     out_protocol=Soap11(),
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     PORT = 8001
 
     print("=" * 60)
-    print("  OmniChain Retail Mesh - SOAP Procurement Service")
+    print("  RetailSync - SOAP Procurement Service")
     print("=" * 60)
     print(f"  SOAP endpoint : http://localhost:{PORT}/")
     print(f"  WSDL          : http://localhost:{PORT}/?wsdl")

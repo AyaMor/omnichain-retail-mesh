@@ -53,7 +53,7 @@ def generate_commands():
 
 def run():
     print("=" * 60)
-    print("  OmniChain Retail Mesh - gRPC Warehouse Client")
+    print("  RetailSync - gRPC Warehouse Client")
     print("=" * 60)
     print()
 

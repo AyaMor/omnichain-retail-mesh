@@ -1,4 +1,4 @@
-# OmniChain Retail Mesh -- Presentation Diagrams and Slide Content
+# RetailSync -- Presentation Diagrams and Slide Content
 
 All diagrams are available as PNG images in the `diagrams/` folder, ready for direct insertion into your slides.
 
@@ -7,7 +7,7 @@ All diagrams are available as PNG images in the `diagrams/` folder, ready for di
 
 Use this as the opening "Big Picture" slide.
 
-![OmniChain Retail Mesh - System Architecture](/Users/ayamorsli/projet-API/diagrams/01_master_architecture.png)
+![RetailSync - System Architecture](/Users/ayamorsli/projet-API/diagrams/01_master_architecture.png)
 
 
 ## 1. SOAP -- B2B Procurement
@@ -149,7 +149,7 @@ Use this on a single slide for a side-by-side overview.
 
 Use this to demonstrate the **logical reasoning** behind each technology choice.
 
-![OmniChain Protocol Selection Logic](/Users/ayamorsli/projet-API/diagrams/06_decision_tree.png)
+![RetailSync Protocol Selection Logic](/Users/ayamorsli/projet-API/diagrams/06_decision_tree.png)
 
 **Pro-Speaker Note:** *"REST is our default — we only deviate when a requirement explicitly demands something REST cannot provide. This decision tree shows that every non-REST choice is driven by a concrete constraint, not by novelty."*
 

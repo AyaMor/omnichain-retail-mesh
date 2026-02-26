@@ -105,7 +105,7 @@ class DashboardSummary:
 MOCK_STORES = [
     Store(
         id=strawberry.ID("STORE-PARIS-01"),
-        name="OmniChain Paris - Le Marais",
+        name="RetailSync Paris - Le Marais",
         city="Paris",
         country="France",
         inventory=[
@@ -135,7 +135,7 @@ MOCK_STORES = [
     ),
     Store(
         id=strawberry.ID("STORE-BERLIN-02"),
-        name="OmniChain Berlin - Mitte",
+        name="RetailSync Berlin - Mitte",
         city="Berlin",
         country="Germany",
         inventory=[
@@ -207,7 +207,7 @@ schema = strawberry.Schema(query=Query)
 graphql_app = GraphQLRouter(schema)
 
 app = FastAPI(
-    title="OmniChain Retail Mesh - Manager Dashboard (GraphQL)",
+    title="RetailSync - Manager Dashboard (GraphQL)",
     description="GraphQL aggregator gateway for store managers.",
     version="1.0.0",
 )
@@ -215,7 +215,7 @@ app.include_router(graphql_app, prefix="/graphql")
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  OmniChain Retail Mesh - GraphQL Dashboard")
+    print("  RetailSync - GraphQL Dashboard")
     print("=" * 60)
     print("  GraphQL endpoint : http://localhost:8003/graphql")
     print("  GraphiQL IDE     : http://localhost:8003/graphql")

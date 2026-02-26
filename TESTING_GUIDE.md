@@ -1,4 +1,4 @@
-# Testing Guide -- OmniChain Retail Mesh
+# Testing Guide -- RetailSync
 
 This guide walks you through starting every mock server, verifying each one from the terminal, and then importing and running the full Postman test suite.
 
@@ -46,7 +46,7 @@ python procurement/mock-server/server.py
 Expected output:
 ```
 ============================================================
-  OmniChain Retail Mesh - SOAP Procurement Service
+  RetailSync - SOAP Procurement Service
 ============================================================
   SOAP endpoint : http://localhost:8001/
   WSDL          : http://localhost:8001/?wsdl
@@ -59,7 +59,7 @@ python marketplace/mock-server/server.py
 Expected output:
 ```
 ============================================================
-  OmniChain Retail Mesh - REST Marketplace API
+  RetailSync - REST Marketplace API
 ============================================================
   API endpoint  : http://localhost:8002
   Swagger UI    : http://localhost:8002/docs
@@ -72,7 +72,7 @@ python dashboard/mock-server/server.py
 Expected output:
 ```
 ============================================================
-  OmniChain Retail Mesh - GraphQL Dashboard
+  RetailSync - GraphQL Dashboard
 ============================================================
   GraphQL endpoint : http://localhost:8003/graphql
 ```
@@ -84,7 +84,7 @@ python logistics/mock-server/server.py
 Expected output:
 ```
 ============================================================
-  OmniChain Retail Mesh - gRPC Warehouse Automation
+  RetailSync - gRPC Warehouse Automation
 ============================================================
   gRPC endpoint  : localhost:50051
 ```
@@ -169,8 +169,8 @@ Expected: first a unary response with robot position and battery, then a stream 
 1. Open Postman.
 2. Click the **Environments** tab in the left sidebar.
 3. Click **Import**.
-4. Select the file `postman/OmniChain_Environment.json` from the project directory.
-5. You should see a new environment called **OmniChain Retail Mesh - Local** with four variables:
+4. Select the file `postman/RetailSync_Environment.json` from the project directory.
+5. You should see a new environment called **RetailSync - Local** with four variables:
    - `baseUrl_rest` = `http://localhost:8002`
    - `baseUrl_graphql` = `http://localhost:8003`
    - `baseUrl_soap` = `http://localhost:8001`
@@ -180,15 +180,15 @@ Expected: first a unary response with robot position and battery, then a stream 
 
 1. Click the **Collections** tab in the left sidebar.
 2. Click **Import**.
-3. Select the file `postman/OmniChain_Collection.json`.
-4. You should see a collection called **OmniChain Retail Mesh - Full Lifecycle** with three folders:
+3. Select the file `postman/RetailSync_Collection.json`.
+4. You should see a collection called **RetailSync - Full Lifecycle** with three folders:
    - Module 1: REST - Partner Marketplace (3 requests)
    - Module 2: GraphQL - Manager Dashboard (2 requests)
    - Module 3: SOAP - B2B Procurement (1 request)
 
 ### 4.3 Select the Environment
 
-In the top-right corner of Postman, click the environment dropdown and select **OmniChain Retail Mesh - Local**. This activates the base URL variables used by all requests.
+In the top-right corner of Postman, click the environment dropdown and select **RetailSync - Local**. This activates the base URL variables used by all requests.
 
 -
 
@@ -213,7 +213,7 @@ Before running the full collection, test one request to confirm connectivity:
    - Ensure all 6 requests are checked.
    - Iterations: 1.
    - Delay: 0 ms.
-3. Click **Run OmniChain Retail Mesh - Full Lifecycle**.
+3. Click **Run RetailSync - Full Lifecycle**.
 4. Wait for all requests to complete. You should see:
    - 6/6 requests completed
    - All test assertions passing (green check marks)
@@ -303,4 +303,4 @@ Postman handles gRPC through a dedicated interface, not standard HTTP requests.
 | Port already in use | Kill the process: `lsof -ti:PORT_NUMBER \| xargs kill -9` |
 | gRPC stubs not found | Re-run the `grpc_tools.protoc` command from Step 1 |
 | Postman shows `Could not send request` | Verify the environment is selected (top-right dropdown) |
-| SOAP returns 500 | Check the XML envelope matches the expected namespace `http://omnichain.retail/procurement` |
+| SOAP returns 500 | Check the XML envelope matches the expected namespace `http://retailsync.retail/procurement` |

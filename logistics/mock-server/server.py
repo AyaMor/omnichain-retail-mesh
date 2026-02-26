@@ -96,7 +96,7 @@ def serve():
     server.start()
 
     print("=" * 60)
-    print("  OmniChain Retail Mesh - gRPC Warehouse Automation")
+    print("  RetailSync - gRPC Warehouse Automation")
     print("=" * 60)
     print(f"  gRPC endpoint  : localhost:{PORT}")
     print(f"  Protocol       : gRPC / HTTP/2 / Protobuf")

@@ -5,7 +5,7 @@
 
 syntax = "proto3";
 
-package omnichain.logistics;
+package retailsync.logistics;
 
 // Operational status of a warehouse robot.
 enum RobotStatusEnum {

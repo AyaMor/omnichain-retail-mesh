@@ -74,7 +74,7 @@ inventory_db: list[InventoryItem] = [
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
-    title="OmniChain Retail Mesh - Partner Marketplace API",
+    title="RetailSync - Partner Marketplace API",
     description="REST API for third-party boutiques to synchronise inventory.",
     version="1.0.0",
 )
@@ -131,7 +131,7 @@ def update_inventory_item(sku: str, update: InventoryUpdate):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("  OmniChain Retail Mesh - REST Marketplace API")
+    print("  RetailSync - REST Marketplace API")
     print("=" * 60)
     print("  API endpoint  : http://localhost:8002")
     print("  Swagger UI    : http://localhost:8002/docs")

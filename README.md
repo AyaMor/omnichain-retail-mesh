@@ -1,4 +1,4 @@
-# OmniChain Retail Mesh -- Phase 1: Contracts and Mocks
+# RetailSync -- Phase 1: Contracts and Mocks
 
 A Proof-of-Concept demonstrating how a global retail brand orchestrates four distinct communication paradigms across its supply chain. Each paradigm was chosen to match the operational constraints and integration requirements of its respective domain.
 
