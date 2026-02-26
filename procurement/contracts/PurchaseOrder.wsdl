@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PurchaseOrder.wsdl - SOAP Contract for B2B Procurement
+
+  This WSDL was written before any server code (contract-first approach).
+  Both our retail platform and the manufacturer generate stubs from this file.
+-->
+
+<definitions
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:tns="http://omnichain.retail/procurement"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://omnichain.retail/procurement"
+    name="ProcurementService">
+
+    <!-- Types: XML Schema definitions for Purchase Orders -->
+    <types>
+        <xsd:schema targetNamespace="http://omnichain.retail/procurement">
+
+            <xsd:complexType name="OrderItem">
+                <xsd:sequence>
+                    <xsd:element name="sku" type="xsd:string"
+                        minOccurs="1" maxOccurs="1">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Unique product identifier shared between
+                                our platform and the manufacturer.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="productName" type="xsd:string"/>
+                    <xsd:element name="quantity" type="xsd:positiveInteger">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Must be at least 1. Enforced at schema level.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="unitPriceCents" type="xsd:nonNegativeInteger">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Price in cents to avoid floating-point rounding.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="manufacturingId" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Manufacturer's internal reference for traceability.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="PurchaseOrder">
+                <xsd:sequence>
+                    <xsd:element name="orderId" type="xsd:string"/>
+                    <xsd:element name="buyerOrgId" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Retail organisation identifier, used by the
+                                manufacturer to route to the correct account.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="supplierOrgId" type="xsd:string"/>
+                    <xsd:element name="orderDate" type="xsd:date"/>
+                    <xsd:element name="currency" type="xsd:string"/>
+                    <xsd:element name="items" type="tns:OrderItem"
+                        minOccurs="1" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="OrderResponse">
+                <xsd:sequence>
+                    <xsd:element name="confirmationId" type="xsd:string"/>
+                    <xsd:element name="status" type="xsd:string"/>
+                    <xsd:element name="estimatedDelivery" type="xsd:date"/>
+                    <xsd:element name="totalPriceCents" type="xsd:nonNegativeInteger"/>
+                    <xsd:element name="message" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+        </xsd:schema>
+    </types>
+
+    <!-- Messages -->
+    <message name="SubmitOrderRequest">
+        <part name="order" type="tns:PurchaseOrder"/>
+    </message>
+    <message name="SubmitOrderResponse">
+        <part name="response" type="tns:OrderResponse"/>
+    </message>
+
+    <!-- Port Type -->
+    <portType name="ProcurementPortType">
+        <operation name="SubmitOrder">
+            <documentation>
+                Submits a purchase order to the manufacturer.
+                Returns a confirmation with estimated delivery date.
+            </documentation>
+            <input  message="tns:SubmitOrderRequest"/>
+            <output message="tns:SubmitOrderResponse"/>
+        </operation>
+    </portType>
+
+    <!-- Binding: SOAP 1.1 over HTTP -->
+    <binding name="ProcurementBinding" type="tns:ProcurementPortType">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="SubmitOrder">
+            <soap:operation soapAction="http://omnichain.retail/procurement/SubmitOrder"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <!-- Service endpoint -->
+    <service name="ProcurementService">
+        <documentation>
+            OmniChain Retail Mesh - B2B Procurement Service (Phase 1 mock).
+        </documentation>
+        <port name="ProcurementPort" binding="tns:ProcurementBinding">
+            <soap:address location="http://localhost:8001/procurement"/>
+        </port>
+    </service>
+
+</definitions>

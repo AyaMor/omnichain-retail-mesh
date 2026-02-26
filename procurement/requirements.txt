@@ -1,0 +1,6 @@
+# SOAP Procurement Module — Dependencies
+# ────────────────────────────────────────
+# spyne   : Python SOAP framework for building XML web services
+# lxml    : Fast XML parser required by Spyne for schema validation
+spyne
+lxml

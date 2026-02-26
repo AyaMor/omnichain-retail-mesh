@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sample SOAP request for testing the SubmitOrder operation.
+
+  Usage:
+    curl -X POST http://localhost:8001 \
+      -H "Content-Type: text/xml" \
+      -d @procurement/mock-server/test_request.xml
+-->
+<soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:proc="http://omnichain.retail/procurement">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <proc:SubmitOrder>
+            <proc:order>
+                <proc:order_id>PO-2026-0042</proc:order_id>
+                <proc:buyer_org_id>OMNI-RETAIL-EU</proc:buyer_org_id>
+                <proc:supplier_org_id>MFG-SHENZHEN-008</proc:supplier_org_id>
+                <proc:order_date>2026-02-26</proc:order_date>
+                <proc:currency>EUR</proc:currency>
+                <proc:items>
+                    <proc:OrderItem>
+                        <proc:sku>SKU-JACKET-BLK-L</proc:sku>
+                        <proc:product_name>Urban Wool Jacket — Black, Large</proc:product_name>
+                        <proc:quantity>500</proc:quantity>
+                        <proc:unit_price_cents>4500</proc:unit_price_cents>
+                        <proc:manufacturing_id>MFG-SZ-20260101-A</proc:manufacturing_id>
+                    </proc:OrderItem>
+                    <proc:OrderItem>
+                        <proc:sku>SKU-SNEAKER-WHT-42</proc:sku>
+                        <proc:product_name>RetroFlex Sneaker — White, EU 42</proc:product_name>
+                        <proc:quantity>1200</proc:quantity>
+                        <proc:unit_price_cents>3200</proc:unit_price_cents>
+                        <proc:manufacturing_id>MFG-SZ-20260101-B</proc:manufacturing_id>
+                    </proc:OrderItem>
+                </proc:items>
+            </proc:order>
+        </proc:SubmitOrder>
+    </soapenv:Body>
+</soapenv:Envelope>
