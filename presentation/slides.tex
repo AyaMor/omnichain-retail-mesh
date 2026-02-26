@@ -48,21 +48,9 @@
 \usepackage{colortbl}
 \usepackage{xcolor}
 \usepackage{tikz}
-\usepackage{listings}
 \usepackage{hyperref}
 
 \graphicspath{{../diagrams/}}
-
-% -- Code listings --
-\lstset{
-  basicstyle=\ttfamily\scriptsize,
-  breaklines=true,
-  frame=single,
-  rulecolor=\color{gray!30},
-  backgroundcolor=\color{gray!5},
-  columns=fullflexible,
-  keepspaces=true,
-}
 
 % -- Custom commands --
 \newcommand{\soapbadge}{\colorbox{soapblue}{\textcolor{white}{\scriptsize\textbf{~SOAP~}}}}
@@ -99,8 +87,7 @@
     \item \textbf{Context and Motivation} -- Why four paradigms in one system? \hfill \textit{2 min}
     \item \textbf{System Architecture} -- Master diagram and data flows \hfill \textit{3 min}
     \item \textbf{Paradigm Deep Dive} -- Contract, sequence, and trade-offs \hfill \textit{6 min}
-    \item \textbf{Live Demonstration} -- Running all four services \hfill \textit{3 min}
-    \item \textbf{Cross-Paradigm Analysis} -- Decision tree, payload, aggregation \hfill \textit{2 min}
+    \item \textbf{Cross-Paradigm Analysis} -- Decision tree, payload, aggregation \hfill \textit{5 min}
     \item \textbf{Comparison Matrix and Takeaways} \hfill \textit{2 min}
   \end{enumerate}
   \vfill
@@ -291,87 +278,7 @@
 \end{frame}
 
 % ======================================================================
-% SECTION 4: LIVE DEMONSTRATION
-% ======================================================================
-\section{Live Demonstration}
-
-\begin{frame}{Live Demonstration -- Setup}
-  \textbf{All four services running locally, each on its designated port:}
-  \vspace{0.5em}
-
-  \begin{table}
-    \centering
-    \small
-    \begin{tabular}{llll}
-      \toprule
-      \textbf{Service} & \textbf{Command} & \textbf{Port} & \textbf{Validation} \\
-      \midrule
-      \textcolor{soapblue}{SOAP} & \texttt{python procurement/mock-server/server.py} & 8001 & WSDL served at \texttt{/?wsdl} \\
-      \textcolor{restgreen}{REST} & \texttt{python marketplace/mock-server/server.py} & 8002 & Swagger UI at \texttt{/docs} \\
-      \textcolor{graphqlpurple}{GraphQL} & \texttt{python dashboard/mock-server/server.py} & 8003 & GraphiQL at \texttt{/graphql} \\
-      \textcolor{grpcorange}{gRPC} & \texttt{python logistics/mock-server/server.py} & 50051 & Client script \\
-      \bottomrule
-    \end{tabular}
-  \end{table}
-
-  \vspace{1em}
-  \begin{alertblock}{Demonstration Plan}
-    We will demonstrate the following scenario in sequence:
-    \begin{enumerate}
-      \item Submit a purchase order via SOAP (XML envelope).
-      \item Query and update marketplace inventory via REST (GET, PATCH).
-      \item Aggregate all data through a single GraphQL query.
-      \item Stream robot commands and receive telemetry via gRPC.
-    \end{enumerate}
-  \end{alertblock}
-\end{frame}
-
-\begin{frame}[fragile]{Live Demonstration -- Execution}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \textbf{Step 1: SOAP -- Submit Purchase Order}
-      \begin{lstlisting}[language=bash]
-curl -X POST http://localhost:8001/ \
-  -H "Content-Type: text/xml" \
-  -d @procurement/mock-server/test_request.xml
-      \end{lstlisting}
-      Expected: XML response with \texttt{order\_id} and \texttt{CONFIRMED} status.
-
-      \vspace{1em}
-      \textbf{Step 2: REST -- Inventory Operations}
-      \begin{lstlisting}[language=bash]
-# List all inventory
-curl http://localhost:8002/inventory
-
-# Update stock (PATCH = delta only)
-curl -X PATCH http://localhost:8002/inventory/SKU001 \
-  -H "Content-Type: application/json" \
-  -d '{"quantity": 75}'
-      \end{lstlisting}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \textbf{Step 3: GraphQL -- Aggregated Query}
-      \begin{lstlisting}[language=bash]
-curl -X POST http://localhost:8003/graphql \
-  -H "Content-Type: application/json" \
-  -d '{"query": "{ stores { id name
-    inventory { sku quantity }
-    orders { id status } } }"}'
-      \end{lstlisting}
-      Expected: single JSON response aggregating data from all backends.
-
-      \vspace{1em}
-      \textbf{Step 4: gRPC -- Streaming Telemetry}
-      \begin{lstlisting}[language=bash]
-python logistics/mock-server/client.py
-      \end{lstlisting}
-      Expected: unary status response, then bi-directional stream with MOVE, PICK, CHARGE commands and telemetry events.
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% ======================================================================
-% SECTION 5: CROSS-PARADIGM ANALYSIS
+% SECTION 4: CROSS-PARADIGM ANALYSIS
 % ======================================================================
 \section{Cross-Paradigm Analysis}
 
@@ -400,7 +307,7 @@ python logistics/mock-server/client.py
 \end{frame}
 
 % ======================================================================
-% SECTION 6: COMPARISON MATRIX
+% SECTION 5: COMPARISON MATRIX
 % ======================================================================
 \section{Comparison Matrix and Takeaways}
 
