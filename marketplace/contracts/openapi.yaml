@@ -1,0 +1,146 @@
+# OpenAPI 3.0 Specification - Partner Marketplace Inventory API
+#
+# Contract-first: this spec was written before the FastAPI server code.
+# The server implements exactly these paths and schemas.
+
+openapi: "3.0.3"
+
+info:
+  title: OmniChain Retail Mesh - Partner Marketplace API
+  version: "1.0.0"
+  description: |
+    REST API for third-party boutiques to synchronise their inventory
+    with the OmniChain retail marketplace.
+
+servers:
+  - url: http://localhost:8002
+    description: Local mock server (Phase 1)
+
+paths:
+  /inventory:
+    get:
+      operationId: listInventory
+      summary: List all inventory items
+      description: Returns the full inventory catalogue with optional category filtering.
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by product category
+      responses:
+        "200":
+          description: A list of inventory items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InventoryItem"
+
+  /inventory/{sku}:
+    get:
+      operationId: getInventoryItem
+      summary: Get a single inventory item by SKU
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The requested inventory item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+        "404":
+          description: Item not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    patch:
+      operationId: updateInventoryItem
+      summary: Partially update an inventory item
+      description: |
+        Updates only the fields provided in the request body.
+        Uses PATCH rather than PUT to support partial modifications.
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InventoryUpdate"
+      responses:
+        "200":
+          description: The updated inventory item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+        "404":
+          description: Item not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    InventoryItem:
+      type: object
+      required: [sku, name, category, quantity, price_cents, store_id]
+      properties:
+        sku:
+          type: string
+          example: "SKU001"
+        name:
+          type: string
+          example: "Urban Wool Jacket - Black, L"
+        category:
+          type: string
+          example: "jackets"
+        quantity:
+          type: integer
+          minimum: 0
+          example: 150
+        price_cents:
+          type: integer
+          minimum: 0
+          example: 4500
+          description: Unit price in cents
+        store_id:
+          type: string
+          example: "STORE-PARIS-01"
+
+    InventoryUpdate:
+      type: object
+      description: Partial update payload
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        quantity:
+          type: integer
+          minimum: 0
+        price_cents:
+          type: integer
+          minimum: 0
+
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: "Item not found"
