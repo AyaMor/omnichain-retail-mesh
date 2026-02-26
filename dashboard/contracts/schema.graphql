@@ -1,0 +1,90 @@
+# GraphQL Schema - Manager Dashboard (Aggregator Pattern)
+#
+# Contract-first: this schema was written before the resolver code.
+# The Strawberry server (server.py) implements resolvers to match this schema.
+#
+# The Store type nests data from three different backend systems,
+# allowing a single query to replace multiple REST calls.
+
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum RobotStatus {
+  IDLE
+  MOVING
+  PICKING
+  CHARGING
+  ERROR
+}
+
+
+"""A product in the store's inventory (sourced from REST Marketplace API)."""
+type InventoryItem {
+  sku: String!
+  name: String!
+  category: String!
+  quantity: Int!
+  priceCents: Int!
+}
+
+"""A procurement order (sourced from SOAP Procurement Service)."""
+type Order {
+  id: String!
+  supplierId: String!
+  status: OrderStatus!
+  totalPriceCents: Int!
+  itemCount: Int!
+  orderDate: String!
+  estimatedDelivery: String
+}
+
+"""Real-time robot telemetry (sourced from gRPC Warehouse Service)."""
+type RobotTelemetry {
+  robotId: String!
+  x: Float!
+  y: Float!
+  z: Float!
+  batteryLevel: Float!
+  status: RobotStatus!
+}
+
+"""
+Central aggregated entity. Nests inventory (REST), orders (SOAP),
+and robot telemetry (gRPC) to solve the under-fetching problem.
+"""
+type Store {
+  id: ID!
+  name: String!
+  city: String!
+  country: String!
+  inventory: [InventoryItem!]!
+  orders: [Order!]!
+  robots: [RobotTelemetry!]!
+}
+
+"""Cross-store KPI aggregation for the dashboard home screen."""
+type DashboardSummary {
+  totalStores: Int!
+  totalSkus: Int!
+  totalOrdersPending: Int!
+  totalRobotsActive: Int!
+  lowStockAlerts: [InventoryItem!]!
+}
+
+
+type Query {
+  """Fetch a single store by ID with nested inventory, orders, and robots."""
+  store(id: ID!): Store
+
+  """List all stores in the retail network."""
+  stores: [Store!]!
+
+  """Aggregated KPIs across all stores."""
+  dashboardSummary: DashboardSummary!
+}

@@ -1,0 +1,8 @@
+# GraphQL Dashboard Module — Dependencies
+# ────────────────────────────────────────
+# strawberry-graphql[fastapi] : Python GraphQL library with FastAPI integration
+# fastapi                     : Web framework (hosts the GraphQL endpoint)
+# uvicorn                     : ASGI server to run the application
+strawberry-graphql[fastapi]
+fastapi
+uvicorn
