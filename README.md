@@ -84,3 +84,8 @@ python logistics/mock-server/client.py
 ```
 
 Vous retrouverez tous les tests complets (y compris via Postman) dans le fichier `TESTING_GUIDE.md`.
+
+
+## Démonstration en Direct (Live Demo)
+
+Si vous présentez ce projet, un guide détaillé étape par étape (optimisé pour Postman) est disponible ici pour vous aider à montrer la puissance des APIs sans taper de code devant le public : **[Guide de Démonstration (LIVE_DEMO_GUIDE.md)](LIVE_DEMO_GUIDE.md)**
