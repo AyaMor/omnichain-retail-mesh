@@ -1,0 +1,397 @@
+{
+    "info": {
+        "_postman_id": "f1e2d3c4-b5a6-4789-0123-456789abcdef",
+        "name": "OmniChain Retail Mesh - Full Lifecycle",
+        "description": "# OmniChain Retail Mesh - Postman Collection\n\nThis collection demonstrates the full lifecycle of the OmniChain retail supply chain across three HTTP-based API paradigms (REST, GraphQL, SOAP). Each request includes automated test scripts that validate status codes, response times, and payload correctness.\n\n## How to Run\n\n1. Import this collection and the `OmniChain_Environment.json` environment into Postman.\n2. Start all three servers (see README.md for commands).\n3. Select the **OmniChain Retail Mesh - Local** environment in the top-right dropdown.\n4. Click **Run Collection** to execute all requests sequentially. All tests should pass.\n\n## gRPC Module (Warehouse Logistics)\n\nPostman handles gRPC through a dedicated interface, not standard HTTP requests. To test the gRPC Warehouse Automation service:\n\n### Step 1: Create a gRPC Request\n- Click **New** > **gRPC Request** in Postman.\n- Enter the server URL: `localhost:50051` (no `http://` prefix).\n\n### Step 2: Import the Proto File\n- In the **Service definition** section, click **Import .proto file**.\n- Select `logistics/contracts/warehouse.proto` from the project directory.\n- Postman will parse the file and list the available RPCs.\n\n### Step 3: Invoke GetRobotStatus (Unary)\n- Select **WarehouseAutomation / GetRobotStatus** from the method dropdown.\n- In the **Message** tab, enter:\n```json\n{\n  \"robot_id\": \"ROBOT-P01-A\"\n}\n```\n- Click **Invoke**. You should receive a telemetry snapshot with position, battery level, and status.\n\n### Step 4: Invoke StreamTelemetry (Bi-directional Streaming)\n- Select **WarehouseAutomation / StreamTelemetry** from the method dropdown.\n- Postman will show the streaming interface with a message composer.\n- Enter the first command message:\n```json\n{\n  \"robot_id\": \"ROBOT-P01-A\",\n  \"command\": \"COMMAND_MOVE\",\n  \"target\": { \"x\": 15.0, \"y\": 12.0, \"z\": 0.0 },\n  \"timestamp_ms\": 1740564000000\n}\n```\n- Click **Send** to push the message into the stream.\n- The server will respond with three telemetry events showing the robot moving toward the target coordinates.\n- Send additional commands (COMMAND_PICK, COMMAND_CHARGE) to see the full telemetry cycle.\n- Click **End streaming** when finished.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Module 1: REST - Partner Marketplace",
+            "description": "Tests the REST API used by third-party boutiques to synchronise inventory. Demonstrates GET (resource retrieval) and PATCH (partial update) operations.",
+            "item": [
+                {
+                    "name": "GET - List All Inventory",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl_rest}}/inventory",
+                            "host": [
+                                "{{baseUrl_rest}}"
+                            ],
+                            "path": [
+                                "inventory"
+                            ]
+                        },
+                        "description": "Retrieves the full inventory catalogue. Demonstrates REST's resource-oriented design: a GET on the collection endpoint returns all items."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response time is under 200ms', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response is a non-empty JSON array', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.be.an('array');",
+                                    "    pm.expect(jsonData.length).to.be.above(0);",
+                                    "});",
+                                    "",
+                                    "pm.test('First item contains the expected SKU', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    var sku = pm.environment.get('current_sku');",
+                                    "    var found = jsonData.some(function (item) {",
+                                    "        return item.sku === sku;",
+                                    "    });",
+                                    "    pm.expect(found).to.be.true;",
+                                    "});",
+                                    "",
+                                    "pm.test('Each item has required fields', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    jsonData.forEach(function (item) {",
+                                    "        pm.expect(item).to.have.property('sku');",
+                                    "        pm.expect(item).to.have.property('name');",
+                                    "        pm.expect(item).to.have.property('category');",
+                                    "        pm.expect(item).to.have.property('quantity');",
+                                    "        pm.expect(item).to.have.property('price_cents');",
+                                    "        pm.expect(item).to.have.property('store_id');",
+                                    "    });",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "GET - Single Item by SKU",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl_rest}}/inventory/{{current_sku}}",
+                            "host": [
+                                "{{baseUrl_rest}}"
+                            ],
+                            "path": [
+                                "inventory",
+                                "{{current_sku}}"
+                            ]
+                        },
+                        "description": "Retrieves a single inventory item by its SKU. The SKU is a path parameter because it is part of the resource's identity -- a core REST principle."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response time is under 200ms', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response body contains the correct SKU', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    var sku = pm.environment.get('current_sku');",
+                                    "    pm.expect(jsonData.sku).to.eql(sku);",
+                                    "});",
+                                    "",
+                                    "pm.test('Item has all required fields', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('name');",
+                                    "    pm.expect(jsonData).to.have.property('category');",
+                                    "    pm.expect(jsonData).to.have.property('quantity');",
+                                    "    pm.expect(jsonData).to.have.property('price_cents');",
+                                    "    pm.expect(jsonData).to.have.property('store_id');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "PATCH - Update Stock Quantity",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"quantity\": 75\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl_rest}}/inventory/{{current_sku}}",
+                            "host": [
+                                "{{baseUrl_rest}}"
+                            ],
+                            "path": [
+                                "inventory",
+                                "{{current_sku}}"
+                            ]
+                        },
+                        "description": "Partially updates an inventory item. Uses PATCH rather than PUT because only the changed fields are sent -- a REST best practice for partial modifications."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response time is under 200ms', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response body contains the correct SKU', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    var sku = pm.environment.get('current_sku');",
+                                    "    pm.expect(jsonData.sku).to.eql(sku);",
+                                    "});",
+                                    "",
+                                    "pm.test('Quantity has been updated to 75', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.quantity).to.eql(75);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Module 2: GraphQL - Manager Dashboard",
+            "description": "Tests the GraphQL aggregator gateway used by store managers. A single query fetches stores with nested inventory and orders, demonstrating how GraphQL solves the under-fetching problem.",
+            "item": [
+                {
+                    "name": "Query - Stores with Inventory and Orders",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"query\": \"{ stores { id name city country inventory { sku name category quantity priceCents } orders { id supplierId status totalPriceCents itemCount orderDate estimatedDelivery } } }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl_graphql}}/graphql",
+                            "host": [
+                                "{{baseUrl_graphql}}"
+                            ],
+                            "path": [
+                                "graphql"
+                            ]
+                        },
+                        "description": "Sends a single GraphQL query that fetches all stores with their nested inventory and orders. This replaces what would be multiple sequential REST calls, demonstrating the aggregator pattern."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response time is under 200ms', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response contains data object', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.have.property('data');",
+                                    "});",
+                                    "",
+                                    "pm.test('No GraphQL errors returned', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData).to.not.have.property('errors');",
+                                    "});",
+                                    "",
+                                    "pm.test('Stores array is present and non-empty', function () {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.expect(jsonData.data.stores).to.be.an('array');",
+                                    "    pm.expect(jsonData.data.stores.length).to.be.above(0);",
+                                    "});",
+                                    "",
+                                    "pm.test('First store has nested inventory array', function () {",
+                                    "    var store = pm.response.json().data.stores[0];",
+                                    "    pm.expect(store.inventory).to.be.an('array');",
+                                    "    pm.expect(store.inventory.length).to.be.above(0);",
+                                    "});",
+                                    "",
+                                    "pm.test('First store has nested orders array', function () {",
+                                    "    var store = pm.response.json().data.stores[0];",
+                                    "    pm.expect(store.orders).to.be.an('array');",
+                                    "    pm.expect(store.orders.length).to.be.above(0);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Query - Dashboard Summary (KPIs)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"query\": \"{ dashboardSummary { totalStores totalSkus totalOrdersPending totalRobotsActive lowStockAlerts { sku name quantity } } }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl_graphql}}/graphql",
+                            "host": [
+                                "{{baseUrl_graphql}}"
+                            ],
+                            "path": [
+                                "graphql"
+                            ]
+                        },
+                        "description": "Fetches aggregated KPIs across all stores in a single query. Demonstrates cross-entity aggregation that would require multiple REST endpoints and client-side computation."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response time is under 200ms', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Dashboard summary contains expected KPIs', function () {",
+                                    "    var summary = pm.response.json().data.dashboardSummary;",
+                                    "    pm.expect(summary).to.have.property('totalStores');",
+                                    "    pm.expect(summary).to.have.property('totalSkus');",
+                                    "    pm.expect(summary).to.have.property('totalOrdersPending');",
+                                    "    pm.expect(summary).to.have.property('totalRobotsActive');",
+                                    "});",
+                                    "",
+                                    "pm.test('Low stock alerts is an array', function () {",
+                                    "    var summary = pm.response.json().data.dashboardSummary;",
+                                    "    pm.expect(summary.lowStockAlerts).to.be.an('array');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Module 3: SOAP - B2B Procurement",
+            "description": "Tests the SOAP procurement service used for B2B purchase orders with legacy manufacturers. Sends a full XML envelope and validates the structured response.",
+            "item": [
+                {
+                    "name": "SubmitOrder - Purchase Order to Manufacturer",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "text/xml"
+                            },
+                            {
+                                "key": "SOAPAction",
+                                "value": "http://omnichain.retail/procurement/SubmitOrder"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope\n    xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n    xmlns:proc=\"http://omnichain.retail/procurement\">\n    <soapenv:Header/>\n    <soapenv:Body>\n        <proc:SubmitOrder>\n            <proc:order>\n                <proc:order_id>PO-2026-0042</proc:order_id>\n                <proc:buyer_org_id>OMNI-RETAIL-EU</proc:buyer_org_id>\n                <proc:supplier_org_id>MFG-SHENZHEN-008</proc:supplier_org_id>\n                <proc:order_date>2026-02-26</proc:order_date>\n                <proc:currency>EUR</proc:currency>\n                <proc:items>\n                    <proc:OrderItem>\n                        <proc:sku>SKU-JACKET-BLK-L</proc:sku>\n                        <proc:product_name>Urban Wool Jacket - Black, Large</proc:product_name>\n                        <proc:quantity>500</proc:quantity>\n                        <proc:unit_price_cents>4500</proc:unit_price_cents>\n                        <proc:manufacturing_id>MFG-SZ-20260101-A</proc:manufacturing_id>\n                    </proc:OrderItem>\n                    <proc:OrderItem>\n                        <proc:sku>SKU-SNEAKER-WHT-42</proc:sku>\n                        <proc:product_name>RetroFlex Sneaker - White, EU 42</proc:product_name>\n                        <proc:quantity>1200</proc:quantity>\n                        <proc:unit_price_cents>3200</proc:unit_price_cents>\n                        <proc:manufacturing_id>MFG-SZ-20260101-B</proc:manufacturing_id>\n                    </proc:OrderItem>\n                </proc:items>\n            </proc:order>\n        </proc:SubmitOrder>\n    </soapenv:Body>\n</soapenv:Envelope>"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl_soap}}",
+                            "host": [
+                                "{{baseUrl_soap}}"
+                            ]
+                        },
+                        "description": "Sends a SOAP XML envelope containing a purchase order with two line items to the procurement service. The XML structure follows the WSDL contract defined in PurchaseOrder.wsdl."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response time is under 200ms', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response is valid XML', function () {",
+                                    "    pm.response.to.have.header('Content-Type');",
+                                    "    var contentType = pm.response.headers.get('Content-Type');",
+                                    "    pm.expect(contentType).to.include('xml');",
+                                    "});",
+                                    "",
+                                    "pm.test('Response contains confirmation_id', function () {",
+                                    "    var body = pm.response.text();",
+                                    "    pm.expect(body).to.include('confirmation_id');",
+                                    "});",
+                                    "",
+                                    "pm.test('Order status is ACCEPTED', function () {",
+                                    "    var body = pm.response.text();",
+                                    "    pm.expect(body).to.include('ACCEPTED');",
+                                    "});",
+                                    "",
+                                    "pm.test('Response contains estimated delivery date', function () {",
+                                    "    var body = pm.response.text();",
+                                    "    pm.expect(body).to.include('estimated_delivery');",
+                                    "});",
+                                    "",
+                                    "pm.test('Response contains total price', function () {",
+                                    "    var body = pm.response.text();",
+                                    "    pm.expect(body).to.include('total_price_cents');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
