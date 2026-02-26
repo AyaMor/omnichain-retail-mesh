@@ -1,0 +1,8 @@
+# gRPC Logistics Module — Dependencies
+# ────────────────────────────────────────
+# grpcio       : Python gRPC runtime for building servers and clients
+# grpcio-tools : Protobuf compiler plugin for generating Python stubs
+# protobuf     : Google's Protocol Buffers serialisation library
+grpcio
+grpcio-tools
+protobuf

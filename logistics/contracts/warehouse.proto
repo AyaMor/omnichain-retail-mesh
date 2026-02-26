@@ -1,0 +1,71 @@
+// warehouse.proto - gRPC Contract for Warehouse Robot Automation
+//
+// Contract-first: this file was written before any server or client code.
+// Both generate stubs from this single .proto using grpc_tools.
+
+syntax = "proto3";
+
+package omnichain.logistics;
+
+// Operational status of a warehouse robot.
+enum RobotStatusEnum {
+    ROBOT_STATUS_UNKNOWN  = 0;
+    ROBOT_STATUS_IDLE     = 1;
+    ROBOT_STATUS_MOVING   = 2;
+    ROBOT_STATUS_PICKING  = 3;
+    ROBOT_STATUS_CHARGING = 4;
+    ROBOT_STATUS_ERROR    = 5;
+}
+
+// Commands that can be sent to a robot.
+enum CommandType {
+    COMMAND_UNKNOWN = 0;
+    COMMAND_MOVE    = 1;
+    COMMAND_PICK    = 2;
+    COMMAND_CHARGE  = 3;
+    COMMAND_HALT    = 4;
+}
+
+// 3D coordinates in the warehouse grid (metres).
+message Coordinates {
+    double x = 1;
+    double y = 2;
+    double z = 3;
+}
+
+// Telemetry streamed from a robot to the warehouse controller.
+message RobotTelemetry {
+    string           robot_id      = 1;
+    Coordinates      position      = 2;
+    double           battery_level = 3;
+    RobotStatusEnum  status        = 4;
+    double           speed_mps     = 5;
+    int64            timestamp_ms  = 6;
+}
+
+// Command streamed from the warehouse controller to a robot.
+message WarehouseCommand {
+    string      robot_id     = 1;
+    CommandType command      = 2;
+    Coordinates target       = 3;
+    string      payload_sku  = 4;
+    int64       timestamp_ms = 5;
+}
+
+message StatusResponse {
+    bool   success = 1;
+    string message = 2;
+}
+
+message RobotRequest {
+    string robot_id = 1;
+}
+
+service WarehouseAutomation {
+    // Bi-directional streaming: the controller sends commands while
+    // simultaneously receiving telemetry over a single HTTP/2 connection.
+    rpc StreamTelemetry (stream WarehouseCommand) returns (stream RobotTelemetry);
+
+    // Unary RPC for fetching the latest status of a specific robot.
+    rpc GetRobotStatus (RobotRequest) returns (RobotTelemetry);
+}
