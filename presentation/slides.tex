@@ -101,23 +101,23 @@
 \section{1. Contexte Fonctionnel}
 
 \begin{frame}{Modélisation du Système d'Information (Retail)}
-  L'objectif est de modéliser le Système d'Information (SI) d'une entreprise opérant dans le commerce de détail (Retail), caractérisé par des flux de données hétérogènes impliquant \textbf{quatre domaines métiers distincts} :
+  Modélisation du SI d'une entreprise (Retail), caractérisé par des flux hétérogènes entre \textbf{quatre domaines métiers distincts} :
   \vspace{0.3em}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{block}{\soapbadge~Domaine 1 : Approvisionnement (Procurement)}
-        Service responsable de la création de bons de commande vers des fournisseurs industriels disposant de systèmes ERP historiques.
+      \begin{block}{\soapbadge~Domaine 1 : Approvisionnement}
+        Création de bons de commande vers des fournisseurs industriels (ERP historiques).
       \end{block}
-      \begin{block}{\graphqlbadge~Domaine 3 : Reporting et Pilotage}
-        Service exposant une vue consolidée (Tableau de bord) des stocks, commandes et de la logistique à destination de la direction.
+      \begin{block}{\graphqlbadge~Domaine 3 : Pilotage}
+        Vue consolidée (Tableau de bord) des stocks, commandes et logistique pour la direction.
       \end{block}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{block}{\restbadge~Domaine 2 : Réseau de Boutiques (Marketplace)}
-        Service permettant aux points de vente partenaires de synchroniser leurs niveaux de stock avec la plateforme centrale.
+      \begin{block}{\restbadge~Domaine 2 : Réseau de Boutiques}
+        Boutiques partenaires synchronisant leurs niveaux de stock avec le siège central.
       \end{block}
       \begin{block}{\grpcbadge~Domaine 4 : Logistique Entrepôt}
-        Service traitant la télémétrie en temps réel issue de la flotte de robots d'automatisation d'entrepôt.
+        Télémétrie très haute fréquence issue de la flotte de robots d'automatisation.
       \end{block}
     \end{column}
   \end{columns}
@@ -186,20 +186,20 @@
 \section{3. Analyse des Services et Protocoles}
 
 % -- SOAP --
-\begin{frame}{\soapbadge~Service 1 : Workflow d'Approvisionnement (SOAP)}
+\begin{frame}{\soapbadge~Service 1 : Approvisionnement (SOAP)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Service :} Expose une méthode \texttt{SubmitOrder} recevant des bons de commande formatés.\\[0.8em]
-      \textbf{Motivations du choix de SOAP :}
+      \textbf{Service :} Expose \texttt{SubmitOrder} pour centraliser les commandes.\\[0.6em]
+      \textbf{Choix de SOAP :}
       \begin{itemize}
-        \item \textbf{Intégrité Stricte (XSD) :} Le contrat WSDL inclut une définition XML Schema qui force l'arborescence, les types, et les contraintes de multiplicité ("Fail-fast").
-        \item \textbf{Interopérabilité Legacy :} S'intègre nativement aux systèmes ERP monolithiques des partenaires industriels sans nécessiter de couche de traduction.
+        \item \textbf{Intégrité Stricte (XSD) :} Le WSDL force l'arborescence et les types ("Fail-fast").
+        \item \textbf{Interopérabilité Legacy :} S'intègre aux ERP industriels sans couche de traduction.
       \end{itemize}
-      \vspace{0.5em}
+      \vspace{0.4em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Garantie structurelle totale} & \sacrificed{Verbosité (Parseurs lourds)} \\
-        \gained{Sécurité applicative (WS-Sec)} & \sacrificed{Bande passante élevée} \\
+        \gained{Garantie structurelle} & \sacrificed{Verbosité accrûe} \\
+        \gained{Sécurité (WS-Sec)} & \sacrificed{Bande passante} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -209,20 +209,20 @@
 \end{frame}
 
 % -- REST --
-\begin{frame}{\restbadge~Service 2 : Synchronisation des Stocks Boutiques (REST)}
+\begin{frame}{\restbadge~Service 2 : Stocks Routiques (REST)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Service :} Fournit des points de terminaison HTTP classiques (\texttt{GET /inventory}, \texttt{PATCH /inventory/\{sku\}}).\\[0.8em]
+      \textbf{Service :} Gère l'inventaire via HTTP (\texttt{GET /inventory}, \texttt{PATCH /inventory/\{sku\}}).\\[0.6em]
       \textbf{Motivations du choix de REST :}
       \begin{itemize}
-        \item \textbf{Réduction de la barrière à l'entrée :} Standard du web fondé sur HTTP et JSON, permettant à toute entité tierce de s'intégrer rapidement.
-        \item \textbf{Sémantique HTTP native :} Utilisation judicieuse de \texttt{PATCH} au lieu de \texttt{PUT} pour moduler uniquement le différentiel de stock, optimisant ainsi les requêtes.
+        \item \textbf{Accessibilité :} Standard du web fondé sur HTTP/JSON, facilitant l'intégration par les partenaires.
+        \item \textbf{Notion de SKU :} Identifie un article unique en stock (ex: \textit{Stock Keeping Unit}). Idéal pour cibler un \texttt{PATCH} précis.
       \end{itemize}
-      \vspace{0.5em}
+      \vspace{0.4em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Mise en cache native HTTP} & \sacrificed{Typage dynamique (faible)} \\
-        \gained{Extrême accessibilité} & \sacrificed{Sous/Sur-récupérations} \\
+        \gained{Cache HTTP natif} & \sacrificed{Typage dynamique} \\
+        \gained{Interface intuitive} & \sacrificed{Sur-récupération} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -232,20 +232,20 @@
 \end{frame}
 
 % -- GraphQL --
-\begin{frame}{\graphqlbadge~Service 3 : Interface de Reporting (GraphQL)}
+\begin{frame}{\graphqlbadge~Service 3 : Interface Reporting (GraphQL)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Service :} Point d'entrée unique (\texttt{/graphql}) capable d'agréger des graphes d'objets (Magasins, Employés, Commandes).\\[0.8em]
-      \textbf{Motivations du choix de GraphQL :}
+      \textbf{Service :} Point d'entrée \texttt{/graphql} agrégeant magasins, employés et commandes.\\[0.6em]
+      \textbf{Choix de GraphQL :}
       \begin{itemize}
-        \item \textbf{Résolution du problème du "N+1 Queries" :} Un frontend de reporting complexe évite de lancer N requêtes consécutives vers une API REST, en demandant un arbre de données entier via une unique trame POST.
-        \item \textbf{Contrôle côté client (No Over-fetching) :} Le client précise les champs exacts requis pour chaque composant d'interface UI.
+        \item \textbf{Résout "N+1 Queries" :} Demande un arbre de données entier via une seule requête POST, évitant de multiplier les appels réseau HTTP.
+        \item \textbf{"No Over-fetching" :} Le client spécifie uniquement les champs nécessaires pour l'interface UI.
       \end{itemize}
-      \vspace{0.5em}
+      \vspace{0.4em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Optimisation réseau (Frontend)} & \sacrificed{Complexité d'implémentation} \\
-        \gained{API Introspective et typée} & \sacrificed{Mise en cache HTTP inopérante} \\
+        \gained{Optimisation réseau} & \sacrificed{Implémentation dure} \\
+        \gained{API Introspective} & \sacrificed{Cache inopérant} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -258,17 +258,17 @@
 \begin{frame}{\grpcbadge~Service 4 : Télémétrie Automatisée (gRPC)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Service :} Gère les communications \textit{Machine-to-Machine} à haute fréquence entre le serveur et des systèmes cyber-physiques (robots).\\[0.8em]
-      \textbf{Motivations du choix de gRPC :}
+      \textbf{Service :} Communication robotique \textit{Machine-to-Machine} à très haute fréquence.\\[0.6em]
+      \textbf{Choix de gRPC :}
       \begin{itemize}
-        \item \textbf{Efficience de sérialisation :} L'encodage binaire Protocol Buffers divise par 6 (en moyenne) la taille du payload comparé au JSON, limitant la saturation du réseau sans-fil de l'entrepôt.
-        \item \textbf{Streaming Bidirectionnel (HTTP/2) :} La connexion persistante et la nature full-duplex annulent le coût d'ouverture répétée de connexions TCP ("Handshake overhead"), prérequis pour le temps réel.
+        \item \textbf{Efficience binaire :} Protobuf divise par 6 la taille du payload par rapport au JSON. Vital pour réseaux sans-fil (entrepôt).
+        \item \textbf{Streaming Bidirectionnel :} HTTP/2 maintient la connexion ouverte, annulant la latence TCP ("Handshake") pour du temps-réel pur.
       \end{itemize}
-      \vspace{0.5em}
+      \vspace{0.4em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Faible latence extrême} & \sacrificed{Illisible sans désérialiseur} \\
-        \gained{Génération stricte (Stubs)} & \sacrificed{Navigateurs webs incompatibles} \\
+        \gained{Faible latence pure} & \sacrificed{Format opaque} \\
+        \gained{Génération de Stubs} & \sacrificed{Browsers inadaptés} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
