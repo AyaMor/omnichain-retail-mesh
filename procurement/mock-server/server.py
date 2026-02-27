@@ -57,6 +57,16 @@ class OrderResponse(ComplexModel):
     message            = Unicode()
 
 
+class GetRecentOrdersRequest(ComplexModel):
+    __namespace__ = "http://retailsync.retail/procurement"
+    storeId            = Unicode()
+
+
+class OrderList(ComplexModel):
+    __namespace__ = "http://retailsync.retail/procurement"
+    orders             = Array(PurchaseOrder)
+
+
 # ---------------------------------------------------------------------------
 # Service
 # ---------------------------------------------------------------------------
@@ -86,6 +96,27 @@ class ProcurementService(Service):
             f"Estimated delivery in 14 days."
         )
         return response
+
+    @rpc(GetRecentOrdersRequest, _returns=OrderList, _operation_name="GetRecentOrders")
+    def GetRecentOrders(ctx, request):
+        """Returns mock purchase orders for a given store ID."""
+        import datetime
+        store_id = request.storeId or "UNKNOWN"
+        
+        # Create some mock orders
+        o1 = PurchaseOrder()
+        o1.order_id = f"PO-2026-{store_id[:5]}-001"
+        o1.buyer_org_id = store_id
+        o1.supplier_org_id = "MFG-SHENZHEN-008"
+        o1.order_date = datetime.date.today() - datetime.timedelta(days=2)
+        o1.currency = "EUR"
+        
+        item1 = OrderItem(sku="SKU-TEST-1", productName="Test Item", quantity=50, unitPriceCents=1000, manufacturingId="MFG-1")
+        o1.items = [item1]
+
+        resp = OrderList()
+        resp.orders = [o1]
+        return resp
 
 
 # ---------------------------------------------------------------------------

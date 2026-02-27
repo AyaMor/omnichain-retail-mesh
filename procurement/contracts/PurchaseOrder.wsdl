@@ -83,6 +83,19 @@
                 </xsd:sequence>
             </xsd:complexType>
 
+            <xsd:complexType name="GetRecentOrdersRequest">
+                <xsd:sequence>
+                    <xsd:element name="storeId" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="GetRecentOrdersResponse">
+                <xsd:sequence>
+                    <xsd:element name="orders" type="tns:PurchaseOrder"
+                        minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
         </xsd:schema>
     </types>
 
@@ -92,6 +105,12 @@
     </message>
     <message name="SubmitOrderResponse">
         <part name="response" type="tns:OrderResponse"/>
+    </message>
+    <message name="GetRecentOrdersRequestMsg">
+        <part name="request" type="tns:GetRecentOrdersRequest"/>
+    </message>
+    <message name="GetRecentOrdersResponseMsg">
+        <part name="response" type="tns:GetRecentOrdersResponse"/>
     </message>
 
     <!-- Port Type -->
@@ -104,6 +123,13 @@
             <input  message="tns:SubmitOrderRequest"/>
             <output message="tns:SubmitOrderResponse"/>
         </operation>
+        <operation name="GetRecentOrders">
+            <documentation>
+                Retrieves recent purchase orders for a specific store.
+            </documentation>
+            <input  message="tns:GetRecentOrdersRequestMsg"/>
+            <output message="tns:GetRecentOrdersResponseMsg"/>
+        </operation>
     </portType>
 
     <!-- Binding: SOAP 1.1 over HTTP -->
@@ -112,6 +138,15 @@
                       transport="http://schemas.xmlsoap.org/soap/http"/>
         <operation name="SubmitOrder">
             <soap:operation soapAction="http://retailsync.retail/procurement/SubmitOrder"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetRecentOrders">
+            <soap:operation soapAction="http://retailsync.retail/procurement/GetRecentOrders"/>
             <input>
                 <soap:body use="literal"/>
             </input>
