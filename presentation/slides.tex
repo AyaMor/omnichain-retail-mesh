@@ -64,10 +64,10 @@
 % ======================================================================
 % DOCUMENT
 % ======================================================================
-\title[RetailSync]{\textbf{RetailSync}}
-\subtitle{Une première application pour comparer\\SOAP, REST, GraphQL et gRPC\\dans un système e-commerce}
-\author{Module d'Architecture Logicielle}
-\date{Février 2026}
+\title[Comparaison d'Architectures API]{\textbf{Étude Comparative d'Architectures API}}
+\subtitle{Modélisation d'un Système d'Information Retail Omnicanal\\Approche par Microservices : SOAP, REST, GraphQL et gRPC}
+\author{Soutenance de Projet - Architecture Logicielle}
+\date{}
 \institute{}
 
 \begin{document}
@@ -82,13 +82,13 @@
 % ======================================================================
 % AGENDA
 % ======================================================================
-\begin{frame}{Au programme}
+\begin{frame}{Plan de la présentation}
   \begin{enumerate}
-    \item \textbf{Le Contexte} -- Pourquoi utiliser 4 APIs différentes ? \hfill \textit{2 min}
-    \item \textbf{L'Architecture} -- Comment tout se connecte \hfill \textit{3 min}
-    \item \textbf{Plongée dans les 4 APIs} -- Démonstrations et avantages \hfill \textit{6 min}
-    \item \textbf{Comparaison Pratique} -- Taille des messages et décisions \hfill \textit{5 min}
-    \item \textbf{Conclusion} -- Ce qu'il faut retenir \hfill \textit{2 min}
+    \item \textbf{Contexte Fonctionnel} -- Définition des besoins métier \hfill \textit{2 min}
+    \item \textbf{Choix Architectural} -- Justification de l'approche Microservices \hfill \textit{3 min}
+    \item \textbf{Analyse des Services et Protocoles} -- SOAP, REST, GraphQL, gRPC \hfill \textit{6 min}
+    \item \textbf{Étude Comparative} -- Performance et cas d'usage \hfill \textit{5 min}
+    \item \textbf{Conclusion et Améliorations} -- API Gateway \hfill \textit{2 min}
   \end{enumerate}
   \vfill
   \centering
@@ -98,39 +98,39 @@
 % ======================================================================
 % SECTION 1: CONTEXT
 % ======================================================================
-\section{1. Le Contexte}
+\section{1. Contexte Fonctionnel}
 
-\begin{frame}{Le problème : 4 besoins très différents}
-  Nous simulons une chaîne de magasins qui doit communiquer avec \textbf{quatre acteurs différents}. Chacun a ses propres contraintes :
+\begin{frame}{Modélisation du Système d'Information (Retail)}
+  L'objectif est de modéliser le Système d'Information (SI) d'une entreprise opérant dans le commerce de détail (Retail), caractérisé par des flux de données hétérogènes impliquant \textbf{quatre domaines métiers distincts} :
   \vspace{0.3em}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{block}{\soapbadge~Les Usines (Achats B2B)}
-        Vieux systèmes informatiques (SAP) très stricts. On a besoin d'une garantie totale sur le format des commandes, sans erreur.
+      \begin{block}{\soapbadge~Domaine 1 : Approvisionnement (Procurement)}
+        Service responsable de la création de bons de commande vers des fournisseurs industriels disposant de systèmes ERP historiques.
       \end{block}
-      \begin{block}{\graphqlbadge~Le(la) Gérant(e) (Tableau de bord)}
-        A besoin de voir toutes les infos (stock, commandes) sur un seul écran, sans faire 10 requêtes différentes qui ralentissent le site.
+      \begin{block}{\graphqlbadge~Domaine 3 : Reporting et Pilotage}
+        Service exposant une vue consolidée (Tableau de bord) des stocks, commandes et de la logistique à destination de la direction.
       \end{block}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{block}{\restbadge~Les Boutiques (Partenaires)}
-        Veulent gérer leur stock facilement avec n'importe quel langage de programmation. Il faut faire très simple.
+      \begin{block}{\restbadge~Domaine 2 : Réseau de Boutiques (Marketplace)}
+        Service permettant aux points de vente partenaires de synchroniser leurs niveaux de stock avec la plateforme centrale.
       \end{block}
-      \begin{block}{\grpcbadge~Les Robots (Dans l'entrepôt)}
-        Envoient leur position en continu (10 fois par seconde). Il faut que le message soit microscopique pour ne pas bloquer le réseau.
+      \begin{block}{\grpcbadge~Domaine 4 : Logistique Entrepôt}
+        Service traitant la télémétrie en temps réel issue de la flotte de robots d'automatisation d'entrepôt.
       \end{block}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Le code vient après}
+\begin{frame}{Démarche d'Ingénierie : Approche "Contract-First"}
   \begin{columns}[T]
     \begin{column}{0.55\textwidth}
-      Pour chaque API de ce projet, nous avons suivi une règle stricte :
+      La conception du SI a suivi une méthode stricte d'ingénierie dirigée par les contrats :
       \begin{enumerate}
-        \item \textbf{Définir le ``Contrat''} -- On écrit d'abord un fichier qui décrit comment l'API va marcher.
-        \item \textbf{Coder le serveur} -- Le code est créé à partir du contrat, jamais l'inverse.
-        \item \textbf{Tester avec Postman} -- Pour vérifier que ça fonctionne bien !
+        \item \textbf{Spécification du Contrat} -- Définition formelle de l'interface avant toute implémentation.
+        \item \textbf{Génération/Implémentation} -- Le serveur est contraint par les stubs et schémas générés à partir du contrat.
+        \item \textbf{Validation} -- Vérification systématique de la conformité des échanges.
       \end{enumerate}
     \end{column}
     \begin{column}{0.42\textwidth}
@@ -149,8 +149,8 @@
         \end{tabular}
       \end{table}
       \vspace{0.5em}
-      \begin{alertblock}{Idée à retenir}
-        En séparant la règle (le contrat) du code, l'application est beaucoup plus facile à modifier et tester.
+      \begin{alertblock}{Bénéfice Architectural}
+        Le découplage entre la spécification (contrat) et l'implémentation (code) favorise l'indépendance des équipes et la robustesse des systèmes distribués.
       \end{alertblock}
     \end{column}
   \end{columns}
@@ -159,9 +159,22 @@
 % ======================================================================
 % SECTION 2: ARCHITECTURE
 % ======================================================================
-\section{2. L'Architecture}
+\section{2. Choix Architectural}
 
-\begin{frame}{Vue d'ensemble du Projet}
+\begin{frame}{Justification de l'approche Microservices}
+  Face à l'hétérogénéité des besoins métier, une architecture monolithique a été rejetée au profit d'une **architecture orientée Microservices**.
+  
+  \vspace{0.5em}
+  
+  \textbf{Raisonnement : Pourquoi segmenter en services distincts ?}
+  \begin{itemize}
+    \item \textbf{Contraintes Technologiques Incompatibles :} gRPC (HTTP/2 binaire), SOAP (Spécifications XML lourdes) et REST (HTTP/1.1 classique) nécessitent des bibliothèques et des serveurs sous-jacents structurellement différents. Une fusion créerait une dépendance forte et complexe ("anti-pattern").
+    \item \textbf{Isolation des Défaillances :} Une surcharge sur le service de télémétrie des robots (gRPC) ne doit pas impacter la création des bons de commande (SOAP). L'isolation par processus métier garantit la haute disponibilité.
+    \item \textbf{Déploiement Indépendant :} Permet aux différentes équipes (ex: équipe Logistique vs équipe Partenaires) de déployer leurs évolutions sans risquer de générer des régressions sur les autres services.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Cartographie Logique du Système}
   \begin{center}
     \includegraphics[width=0.88\textwidth]{01_master_architecture.png}
   \end{center}
@@ -170,23 +183,23 @@
 % ======================================================================
 % SECTION 3: DEEP DIVE
 % ======================================================================
-\section{3. Plongée dans les 4 APIs}
+\section{3. Analyse des Services et Protocoles}
 
 % -- SOAP --
-\begin{frame}{\soapbadge~Module SOAP -- Commandes aux usines}
+\begin{frame}{\soapbadge~Service 1 : Workflow d'Approvisionnement (SOAP)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Format :} Lourd mais ultra sécurisé (XML)\\[0.8em]
-      \textbf{Pourquoi on l'a choisi :}
+      \textbf{Service :} Expose une méthode \texttt{SubmitOrder} recevant des bons de commande formatés.\\[0.8em]
+      \textbf{Motivations du choix de SOAP :}
       \begin{itemize}
-        \item \textbf{Validation parfaite :} Impossible d'oublier un champ grâce au fichier WSDL qui vérifie tout.
-        \item \textbf{Format d'entreprise :} C'est ce que les gros logiciels SAP/Oracle attendent.
+        \item \textbf{Intégrité Stricte (XSD) :} Le contrat WSDL inclut une définition XML Schema qui force l'arborescence, les types, et les contraintes de multiplicité ("Fail-fast").
+        \item \textbf{Interopérabilité Legacy :} S'intègre nativement aux systèmes ERP monolithiques des partenaires industriels sans nécessiter de couche de traduction.
       \end{itemize}
       \vspace{0.5em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Erreurs impossibles} & \sacrificed{XML dur à lire} \\
-        \gained{Très sécurisé} & \sacrificed{Outils un peu vieux} \\
+        \gained{Garantie structurelle totale} & \sacrificed{Verbosité (Parseurs lourds)} \\
+        \gained{Sécurité applicative (WS-Sec)} & \sacrificed{Bande passante élevée} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -196,20 +209,20 @@
 \end{frame}
 
 % -- REST --
-\begin{frame}{\restbadge~Module REST -- Gestion de l'inventaire}
+\begin{frame}{\restbadge~Service 2 : Synchronisation des Stocks Boutiques (REST)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Format :} Le grand classique du net (JSON)\\[0.8em]
-      \textbf{Pourquoi on l'a choisi :}
+      \textbf{Service :} Fournit des points de terminaison HTTP classiques (\texttt{GET /inventory}, \texttt{PATCH /inventory/\{sku\}}).\\[0.8em]
+      \textbf{Motivations du choix de REST :}
       \begin{itemize}
-        \item \textbf{Universel :} Tout le monde sait faire une requête GET ou PATCH.
-        \item \textbf{Très facile à mettre en place :} Aucun fichier complexe à générer. Pas besoin d'outils compliqués.
+        \item \textbf{Réduction de la barrière à l'entrée :} Standard du web fondé sur HTTP et JSON, permettant à toute entité tierce de s'intégrer rapidement.
+        \item \textbf{Sémantique HTTP native :} Utilisation judicieuse de \texttt{PATCH} au lieu de \texttt{PUT} pour moduler uniquement le différentiel de stock, optimisant ainsi les requêtes.
       \end{itemize}
       \vspace{0.5em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Hyper simple} & \sacrificed{Pas de validation forte} \\
-        \gained{Rapide à coder} & \sacrificed{Vieux design par requêtes séparées} \\
+        \gained{Mise en cache native HTTP} & \sacrificed{Typage dynamique (faible)} \\
+        \gained{Extrême accessibilité} & \sacrificed{Sous/Sur-récupérations} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -219,20 +232,20 @@
 \end{frame}
 
 % -- GraphQL --
-\begin{frame}{\graphqlbadge~Module GraphQL -- Le Tableau de Bord}
+\begin{frame}{\graphqlbadge~Service 3 : Interface de Reporting (GraphQL)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Format :} Flexible (JSON)\\[0.8em]
-      \textbf{Pourquoi on l'a choisi :}
+      \textbf{Service :} Point d'entrée unique (\texttt{/graphql}) capable d'agréger des graphes d'objets (Magasins, Employés, Commandes).\\[0.8em]
+      \textbf{Motivations du choix de GraphQL :}
       \begin{itemize}
-        \item \textbf{Requête unique :} Parfait pour une interface web qui veut charger plein d'informations à la fois.
-        \item \textbf{À la carte :} On ne télécharge que les informations qu'on veut afficher sur l'écran.
+        \item \textbf{Résolution du problème du "N+1 Queries" :} Un frontend de reporting complexe évite de lancer N requêtes consécutives vers une API REST, en demandant un arbre de données entier via une unique trame POST.
+        \item \textbf{Contrôle côté client (No Over-fetching) :} Le client précise les champs exacts requis pour chaque composant d'interface UI.
       \end{itemize}
       \vspace{0.5em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Une seule requête HTTP} & \sacrificed{Nouveau concept à apprendre} \\
-        \gained{Économise internet} & \sacrificed{Difficile de mettre en cache} \\
+        \gained{Optimisation réseau (Frontend)} & \sacrificed{Complexité d'implémentation} \\
+        \gained{API Introspective et typée} & \sacrificed{Mise en cache HTTP inopérante} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -242,20 +255,20 @@
 \end{frame}
 
 % -- gRPC --
-\begin{frame}{\grpcbadge~Module gRPC -- Les Robots de l'Entrepôt}
+\begin{frame}{\grpcbadge~Service 4 : Télémétrie Automatisée (gRPC)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Format :} Binaire ultra léger (Protobuf)\\[0.8em]
-      \textbf{Pourquoi on l'a choisi :}
+      \textbf{Service :} Gère les communications \textit{Machine-to-Machine} à haute fréquence entre le serveur et des systèmes cyber-physiques (robots).\\[0.8em]
+      \textbf{Motivations du choix de gRPC :}
       \begin{itemize}
-        \item \textbf{Microscopique :} Un message fait 40 octets (contre 250 en REST). On gagne 6x de vitesse!
-        \item \textbf{Temps réel :} Le serveur et le robot se parlent en continu sans refaire de nouvelle connexion (streaming bidirectionnel).
+        \item \textbf{Efficience de sérialisation :} L'encodage binaire Protocol Buffers divise par 6 (en moyenne) la taille du payload comparé au JSON, limitant la saturation du réseau sans-fil de l'entrepôt.
+        \item \textbf{Streaming Bidirectionnel (HTTP/2) :} La connexion persistante et la nature full-duplex annulent le coût d'ouverture répétée de connexions TCP ("Handshake overhead"), prérequis pour le temps réel.
       \end{itemize}
       \vspace{0.5em}
       \footnotesize
       \begin{tabular}{p{3.2cm}p{3.2cm}}
-        \gained{Ultra rapide / léger} & \sacrificed{Illisible sans outil} \\
-        \gained{Streaming réel} & \sacrificed{Difficile pour le web} \\
+        \gained{Faible latence extrême} & \sacrificed{Illisible sans désérialiseur} \\
+        \gained{Génération stricte (Stubs)} & \sacrificed{Navigateurs webs incompatibles} \\
       \end{tabular}
     \end{column}
     \begin{column}{0.50\textwidth}
@@ -267,93 +280,89 @@
 % ======================================================================
 % SECTION 4: CROSS-PARADIGM ANALYSIS
 % ======================================================================
-\section{4. Comparaison Pratique}
+\section{4. Étude Comparative}
 
-\begin{frame}{Pourquoi telle ou telle API ? (Arbre de décision)}
+\begin{frame}{Matrice décisionnelle : Orientations technologiques}
   \begin{center}
     \includegraphics[width=0.82\textwidth]{06_decision_tree.png}
   \end{center}
   \vspace{0.3em}
-  \centering\small\textit{REST est le choix par défaut. On change seulement si on a un vrai problème technique à régler.}
+  \centering\small\textit{Postulat architectural initial : REST est l'approche par défaut. Toute déviation protocollaire doit être justifiée formellement par un manque capacitaire.}
 \end{frame}
 
-\begin{frame}{Comparatif de taille des messages}
+\begin{frame}{Analyse de surcharge d'encodage (Payload Overhead)}
   \begin{center}
     \includegraphics[width=0.85\textwidth]{08_payload_comparison.png}
   \end{center}
   \vspace{0.3em}
-  \centering\small\textit{Pour envoyer la même information au système : 1 KB (SOAP) $\rightarrow$ 200 B (REST) $\rightarrow$ 50 B (gRPC).}
+  \centering\small\textit{Pour modéliser le même objet de domaine : 1 KB (SOAP/XML) $\rightarrow$ 200 B (REST/JSON) $\rightarrow$ 50 B (gRPC/Protobuf).}
 \end{frame}
 
-\begin{frame}{GraphQL, le "Chef d'Orchestre"}
+\begin{frame}{Motif d'Architecture : Le Backend-For-Frontend (BFF) Aggregator}
   \begin{center}
     \includegraphics[width=0.82\textwidth]{07_aggregator_pattern.png}
   \end{center}
   \vspace{0.3em}
-  \centering\small\textit{Pour le développeur du site web, les différences entre SOAP, REST et gRPC sont invisibles. GraphQL unit tout !}
+  \centering\small\textit{GraphQL agit comme un adaptateur agnostique : il consolide la complexité du paysage microservices, présentant une façade unifiée au client web.}
 \end{frame}
 
 % ======================================================================
-% SECTION 5: COMPARISON MATRIX
+% SECTION 5: CONCLUSION
 % ======================================================================
-\section{5. Conclusion}
+\section{5. Conclusion et Améliorations}
 
-\begin{frame}{Tableau de Synthèse}
+\begin{frame}{Tableau de Synthèse Technique}
   \begin{table}
     \centering
     \scriptsize
     \renewcommand{\arraystretch}{1.3}
     \begin{tabular}{l >{\color{soapblue}}c >{\color{restgreen}}c >{\color{graphqlpurple}}c >{\color{grpcorange}}c}
       \toprule
-      \textbf{Critères} & \textbf{SOAP} & \textbf{REST} & \textbf{GraphQL} & \textbf{gRPC} \\
+      \textbf{Attributs} & \textbf{SOAP} & \textbf{REST} & \textbf{GraphQL} & \textbf{gRPC} \\
       \midrule
-      Format & XML & JSON & JSON & Protobuf \\
-      Connexion & HTTP/1.1 & HTTP/1.1 & HTTP/1.1 & HTTP/2 \\
-      Sécurité format & Très stricte (WSDL) & Moyenne & Flexible & Stricte (.proto) \\
-      Vitesse/Taille & Très lent (Lourd) & Basique & Economique & Ultra rapide (Léger) \\
-      Streaming Direct & Non & Non & Partiel & Oui (Dans les 2 sens) \\
-      Le Meilleur Pour & Tâches Critiques/B2B & Public et Simple & Sites Web (Affichage) & Robots et Temps Réel \\
+      Couche Transport & HTTP/1.1 & HTTP/1.1 & HTTP/1.1 & HTTP/2 \\
+      Sérialisation & XML & JSON & JSON & Binaire (Protobuf) \\
+      Typage / Contrat & Statique Fort (XSD) & Faible (OpenAPI optionnel) & Fort (Schéma GraphQL) & Statique Fort (.proto) \\
+      Modèle d'Exécution & Requête/Réponse & Requête/Réponse & Requête/Réponse (Graph) & Streaming Natif RPC \\
+      Mécanique de Cache & Aucune & Native (GET HTTP) & Limité (POST HTTP) & Aucune \\
+      Couplage Client & Important (Stubs WSDL) & Faible & Moyen & Important (Stubs gRPC) \\
+      Cas d'Usage Cible & Transactions B2B & Opérations CRUD publiques & Agrégation de données UI & Télémétrie/Microservices internes \\
       \bottomrule
     \end{tabular}
   \end{table}
   \vspace{0.5em}
-  \centering\small Il n'y a pas d'API parfaite. Il n'y a que le \textbf{bon type d'API pour le bon besoin}.
+  \centering\small Il n'existe pas de standard API universel ("Silver Bullet"), uniquement des modélisations optimales pour des contraintes spécifiques.
 \end{frame}
 
-\begin{frame}{Point d'Amélioration : Le Rôle de l'API Gateway}
-  \textbf{Le problème actuel (Pédagogique) :}
+\begin{frame}{Point d'Amélioration : Implémentation d'une API Gateway}
+  \textbf{Le périmètre actuel de l'étude (Scope Pédagogique) :}
   \begin{itemize}
-    \item Notre projet expose 4 serveurs sur \textbf{4 ports différents} (8001, 8002, 8003, 50051).
-    \item C'est parfait pour comprendre comment chaque protocole fonctionne en isolation.
+    \item Exposition direct de 4 serveurs sur \textbf{4 ports disparates} (8001, 8002, 8003, 50051).
+    \item Permet l'étude isolée de chaque serveur, mais viole les bonnes pratiques de sécurité et de routage en environnement d'intégration.
   \end{itemize}
   
   \vspace{1em}
   
-  \textbf{La solution en production (Le monde réel) :}
+  \textbf{Évolution cible en production :}
   \begin{itemize}
-    \item On utiliserait une \textbf{Passerelle d'API (API Gateway)}.
-    \item Elle écoute sur \textbf{un seul port unifié} (ex: port 443 pour HTTPS) et agit comme routeur central :
+    \item Déploiement d'une \textbf{Passerelle d'API (API Gateway)}, comme Kong ou AWS Gateway.
+    \item La passerelle agit comme reverse proxy de niveau \textbf{L7 (Couche Application)}, exposant un port d'entrée unifié (ex: 443 pour TLS).
     \begin{itemize}
-      \item \texttt{/procurement} $\rightarrow$ Redirigé vers le serveur SOAP.
-      \item \texttt{/inventory} $\rightarrow$ Redirigé vers le serveur REST.
+      \item \texttt{/api/procurement} $\rightarrow$ Routé vers le cluster SOAP interne.
+      \item \texttt{/api/inventory} $\rightarrow$ Routé vers le cluster REST interne.
     \end{itemize}
-    \item Résultat : L'architecture \textit{Microservices} complexe en arrière-plan est invisible pour le monde extérieur !
+    \item Résultat : Abstraction totale de l'architecture distribuée sous-jacente pour les consommateurs finaux, et centralisation des fonctions de sécurité (Authentification, Rate-Limiting).
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Que faut-il retenir de ce POC ?}
+\begin{frame}{Synthèse Finale}
   \begin{enumerate}
-    \item \textbf{Il n'y a pas de gagnant final.} Chaque API fait son travail parfaitement en fonction du besoin. L'avenir est de savoir les utiliser au bon endroit.
-
-    \item \textbf{REST est notre valeur sûre.} C'est le choix facile et intelligent pour 80\% des projets classiques.
-
-    \item \textbf{Le contrat avant le code.} Créer des règles (fichiers wsdl, proto, openapi) rend l'équipe de développement beaucoup plus autonome et réduit les erreurs.
-
-    \item \textbf{GraphQL n'efface pas REST.} Il se met par-dessus, pour rendre l'interface web plus simple à utiliser sans tout casser derrière.
-
-    \item \textbf{La vitesse gRPC est indispensable.} Pour des machines comme les robots travaillant 10 fois par seconde, SOAP ferait s'écrouler le réseau wifi de l'entrepôt, gRPC le laisse respirer.
+    \item \textbf{Cohérence Fonctionnelle/Technique} : L'approche protocolaire doit toujours être subordonnée aux exigences fonctionnelles du domaine (ex. haute-fréquence logistique vs accessibilité partenaire).
+    \item \textbf{Primauté de REST} : Demeure le standard \textit{de facto} pour l'interopérabilité large, particulièrement pour des architectures orientées ressources (CRUD).
+    \item \textbf{Design Contract-Driven} : Établir des contrats (OpenAPI, WSDL, Protobuf) est un prérequis indispensable à la décentralisation des développements en architecture microservices.
+    \item \textbf{Synergie REST/GraphQL} : GraphQL ne déprécie pas REST. Il l'enrichit en se positionnant comme une couche d'agrégation d'expérience (\textit{Backend-For-Frontend}) optimisée réseau.
+    \item \textbf{Avantage comparatif gRPC} : L'utilisation de protocoles multiplexés (HTTP/2) compacts (Protobuf) s'avère indispensable en contexte IOT et M2M pour prévenir la saturation réseau.
   \end{enumerate}
-
   \vspace{0.5em}
 \end{frame}
 
