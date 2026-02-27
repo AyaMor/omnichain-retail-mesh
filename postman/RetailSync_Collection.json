@@ -390,6 +390,52 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "GetRecentOrders - Voir l'historique (Nouveau)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "text/xml"
+                            },
+                            {
+                                "key": "SOAPAction",
+                                "value": "http://retailsync.retail/procurement/GetRecentOrders"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:proc=\"http://retailsync.retail/procurement\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <proc:GetRecentOrdersRequestMsg>\n         <proc:request>\n            <proc:storeId>STORE-PARIS-01</proc:storeId>\n         </proc:request>\n      </proc:GetRecentOrdersRequestMsg>\n   </soapenv:Body>\n</soapenv:Envelope>"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl_soap}}",
+                            "host": [
+                                "{{baseUrl_soap}}"
+                            ]
+                        },
+                        "description": "Nouvelle opération ajoutée pour que GraphQL puisse interroger l'historique SOAP des commandes d'un magasin spécifique."
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response contains PO number', function () {",
+                                    "    var body = pm.response.text();",
+                                    "    pm.expect(body).to.include('PO-2026-STORE');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         }
