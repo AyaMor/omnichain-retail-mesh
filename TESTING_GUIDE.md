@@ -57,6 +57,13 @@ curl -s -X POST http://localhost:8001 -H "Content-Type: text/xml" -d @procuremen
 ```
 *Résultat attendu : Une réponse en XML qui confirme la commande (`<status>ACCEPTED</status>`).*
 
+**NOUVEAU - Lire l'historique des commandes :**
+Vous pouvez tester la nouvelle méthode `GetRecentOrders` créée pour le tableau de bord GraphQL avec :
+```bash
+curl -s -X POST http://localhost:8001 -H "Content-Type: text/xml" -d @procurement/mock-server/test_request_get_orders.xml
+```
+*Résultat attendu : Une liste de commandes XML pour le magasin.*
+
 ### 2. Tester REST (Gérer le stock des boutiques)
 On utilise les méthodes classiques du web. D'abord, on demande de voir tout le stock (GET).
 ```bash

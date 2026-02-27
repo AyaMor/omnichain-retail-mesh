@@ -1,0 +1,10 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:proc="http://retailsync.retail/procurement">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <proc:GetRecentOrdersRequestMsg>
+         <proc:request>
+            <proc:storeId>STORE-PARIS-01</proc:storeId>
+         </proc:request>
+      </proc:GetRecentOrdersRequestMsg>
+   </soapenv:Body>
+</soapenv:Envelope>
