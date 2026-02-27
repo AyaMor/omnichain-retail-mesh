@@ -25,7 +25,7 @@ Il faut préparer votre environnement **avant** de prendre la parole pour ne pas
 3. **Préparez votre Terminal pour gRPC**
    Gardez un 5ème terminal ouvert, prêt à taper : `python logistics/mock-server/client.py` (ne faites pas Entrée tout de suite).
 
----
+
 
 ## Étape 2 : L'Exécution (Pendant la présentation)
 
@@ -34,6 +34,12 @@ Gérez votre temps : la démo doit durer **3 minutes maximum**. Ne montrez qu'un
 Voici le script (ce que vous faites + ce que vous dites) :
 
 ### 1. Démontrer SOAP (La Rigueur B2B)
+
+**Relation Client-Serveur-API :**
+- **Client :** Postman (qui simule le système ERP d'une usine partenaire).
+- **Serveur :** Notre script Python `procurement/mock-server/server.py` qui écoute sur le port 8001.
+- **L'API :** L'endpoint `/soap` qui n'accepte *que* des requêtes formatées selon le contrat XML explicite (`PurchaseOrder.wsdl`).
+
 - **Action :** Dans Postman, ouvrez le dossier `Module 3 : SOAP...` et cliquez sur la requête `SubmitOrder`.
 - **Ce que vous montrez :** Allez dans l'onglet **Body**. Montrez à l'audience la taille et la complexité de l'enveloppe XML.
 - **Ce que vous dites :** *"Voici comment nous envoyons une commande à l'usine. C'est très verbeux (XML), mais c'est voulu : le contrat WSDL garantit qu'aucune erreur de format n'est possible."*
@@ -41,6 +47,12 @@ Voici le script (ce que vous faites + ce que vous dites) :
 - **Ce que vous montrez :** La réponse apparaît en bas. Montrez le `<status>ACCEPTED</status>`.
 
 ### 2. Démontrer REST (La Simplicité pour les Boutiques)
+
+**Relation Client-Serveur-API :**
+- **Client :** Postman (qui simule l'application web ou mobile d'une boutique franchisée).
+- **Serveur :** Notre script Python FastAPI `marketplace/mock-server/server.py` sur le port 8002.
+- **L'API :** Un ensemble d'URLs (Endpoints) logiques comme `/inventory` basées sur les verbes HTTP standards (GET, PATCH).
+
 - **Action :** Ouvrez le dossier `Module 1 : REST...` et cliquez sur `GET - Voir tout l'inventaire`.
 - **Ce que vous montrez :** Montrez l'URL de la requête, qui est très courte et lisible (`/inventory`).
 - **Ce que vous dites :** *"À l'inverse, voici l'API pour que nos boutiques partenaires consultent le stock. Une simple requête GET standard. N'importe quel développeur web sait l'utiliser en 5 minutes."*
@@ -48,6 +60,12 @@ Voici le script (ce que vous faites + ce que vous dites) :
 - **Ce que vous montrez :** La réponse JSON en bas, très claire avec les quantités.
 
 ### 3. Démontrer GraphQL (Le Chef d'Orchestre)
+
+**Relation Client-Serveur-API :**
+- **Client :** Postman (qui simule le tableau de bord Frontend en React/Vue de la direction de l'entreprise).
+- **Serveur :** Notre script Python Strawberry `dashboard/mock-server/server.py` sur le port 8003.
+- **L'API :** Un point d'entrée unique (`/graphql`) qui reçoit une requête de graphe complexe et se charge lui-même d'aller chercher et consolider les données en base.
+
 - **Action :** Ouvrez le dossier `Module 2 : GraphQL...` et cliquez sur `Requête - Magasins, Stock et Commandes`.
 - **Ce que vous montrez :** Allez dans l'onglet **Body**. Montrez que vous avez tapé exactement les champs que vous voulez : `stores > id, name` puis `inventory` puis `orders`.
 - **Ce que vous dites :** *"Maintenant le tableau de bord du gérant. Au lieu de faire 3 requêtes REST séparées (magasin, stock, commandes), on demande exactement ce qu'on veut à GraphQL en une seule fois. Il s'occupe de rassembler les infos."*
@@ -56,6 +74,12 @@ Voici le script (ce que vous faites + ce que vous dites) :
 
 ### 4. Démontrer gRPC (La Vitesse Temps-Réel)
 *Note : Postman gère gRPC, mais pour un effet "Waouh" devant un jury, le terminal est plus impressionnant visuellement pour afficher du streaming en temps réel.*
+
+**Relation Client-Serveur-API :**
+- **Client :** Notre script `logistics/mock-server/client.py` (qui simule le microcontrôleur embarqué dans le robot logistique).
+- **Serveur :** Notre script `logistics/mock-server/server.py` (la base de contrôle centrale des robots) sur le port 50051.
+- **L'API :** Une connexion persistante HTTP/2 bidirectionnelle, définie par le fichier `warehouse.proto`, où les messages circulent sous forme binaire compressée.
+
 - **Action :** Réduisez Postman et ouvrez votre **5ème terminal** préparé.
 - **Ce que vous dites :** *"Enfin, pour communiquer avec nos 100 robots dans l'entrepôt, SOAP ou REST satureraient le réseau. On utilise gRPC pour envoyer des messages binaires ultra-légers en continu."*
 - **Action :** Appuyez sur **Entrée** pour lancer `python logistics/mock-server/client.py`.
