@@ -69,39 +69,39 @@ Ce document propose une répartition équilibrée de la prise de parole pour la 
 
 ---
 
-## Slide 8 : 4. Analyse - SOAP
-**Durée estimée : 1:00**
+## Slide 8 : 4. Analyse - SOAP (La rigueur des Contrats)
+**Durée estimée : 1:15**
 
-**[Mohamed] :** "Entrons dans le détail. Pour le domaine 1, l'approvisionnement B2B, nous devions nous interfacer avec des ERP historiques. SOAP s'est imposé naturellement."
+**[Mohamed] :** "Entrons dans le détail technique. Commençons par définir rigoureusement **SOAP (Simple Object Access Protocol)**. Il s'agit d'un protocole d'échange d'informations structurées, strictement basé sur le langage XML. Contrairement à une simple architecture, SOAP impose une enveloppe standardisée (Header/Body) et repose sur un contrat de service formel, le WSDL, qui dicte contractuellement chaque opération, type et paramètre disponible."
 
-**[Mohamed] :** "Malgré sa verbosité liée au XML, l'usage d'un fichier WSDL et d'un schéma XSD nous permet une validation 'Fail-fast'. Si le partenaire envoie une entité métier non conforme au contrat strict, le flux est rejeté avant même d'atteindre le code logique. C'est robuste et éprouvé."
-
----
-
-## Slide 9 : 4. Analyse - REST
-**Durée estimée : 1:00**
-
-**[Aya] :** "Pour le domaine 2, la synchronisation avec des boutiques tierces, le critère numéro un était l'accessibilité. Nous avons choisi l'architecture REST."
-
-**[Aya] :** "Basé sur les standards du Web, HTTP et JSON, REST permet à n'importe quel partenaire de s'intégrer facilement. Nous avons particulièrement travaillé sur la sémantique HTTP, en utilisant par exemple la notion de SKU (Stock Keeping Unit) dans l'URL et le verbe HTTP `PATCH` pour mettre à jour efficacement et de manière asynchrone le différentiel d'un inventaire."
+**[Mohamed] :** "Pour notre domaine 1, l'approvisionnement B2B avec des usines, nous devions nous interfacer avec des ERP historiques. SOAP s'est imposé naturellement par sa rigueur. Tout part du contrat WSDL. Plutôt que de coder manuellement la logique réseau, nous l'utilisons pour générer ce qu'on appelle un **Stub** (une souche). Ce Stub agit comme un proxy local : le développeur appelle une simple fonction Python, et le Stub se charge en coulisses de sérialiser l'objet en une enveloppe XML parfaitement conforme au schéma XSD, puis de l'envoyer sur le réseau. Cela garantit une validation 'Fail-fast' et masque la complexité de l'échange XML."
 
 ---
 
-## Slide 10 : 4. Analyse - GraphQL
+## Slide 9 : 4. Analyse - REST (L'Universalité et ses limites)
+**Durée estimée : 1:15**
+
+**[Aya] :** "Passons à **REST (Representational State Transfer)**. Plus qu'un protocole, REST est un style architectural défini par Roy Fielding. Il repose sur l'exposition de ressources identifiables par des URI, manipulées exclusivement de manière 'stateless' via la sémantique standard des verbes HTTP (GET, POST, PUT, PATCH, DELETE). Le format d'échange est libre, mais le JSON est devenu le standard de fait."
+
+**[Aya] :** "Pour le domaine 2, la synchronisation des stocks avec les boutiques, le critère numéro un était l'accessibilité universelle. Nous avons logiquement choisi REST. REST brille par son utilisation sémantique de HTTP, comme le verbe `PATCH` pour mettre à jour efficacement une quantité. De plus, il profite nativement du cache HTTP sur les requêtes `GET`. Cependant, cette approche montre ses limites face à des interfaces complexes. Le client subit souvent le problème de l'**Over-fetching** (télécharger un objet JSON entier alors qu'on ne veut qu'un seul champ) et le problème des **N+1 requêtes** (multiplier les appels HTTP séquentiels pour récupérer des données liées)."
+
+---
+
+## Slide 10 : 4. Analyse - GraphQL (L'Orchestration BFF)
 **Durée estimée : 1:30**
 
-**[Mohamed] :** "Le domaine 3 devait alimenter un tableau de bord directionnel agrégeant de nombreuses entités (Magasins, Commandes, Employés). Les approches CRUD traditionnelles comme REST allaient générer de la latence via le fameux problème des 'N+1 requêtes'."
+**[Mohamed] :** "Technologie plus récente, **GraphQL** est un langage de requête open source créé par Facebook. Contrairement à REST qui expose de multiples URIs fixes, GraphQL expose un 'Endpoint' unique. Il offre au client la possibilité de définir de manière déclarative et fortement typée la struture exacte des données dont il a besoin, déplaçant ainsi la logique de composition du client vers le serveur."
 
-**[Mohamed] :** "GraphQL résout élégamment ce problème. En une seule trame POST, le frontend requise exactement l'arbre de graphe de données dont il a besoin, résolvant le sur-fetching de données, au prix d'une implémentation serveur plus complexe."
+**[Mohamed] :** "Le domaine 3, notre tableau de bord directionnel, adressait justement le problème de sur-multiplication des requêtes REST. En une seule trame POST, le frontend demande exactement l'arbre de graphe de données dont il a besoin, résolvant purement le sur-fetching. Plus important encore, dans notre projet, le serveur GraphQL agit comme un véritable orchestrateur (pattern BFF - Backend For Frontend). Derrière chaque champ du schéma se cache une fonction appelée **Resolver**. Lorsqu'on interroge un magasin, nos Resolvers Python font le 'Fan-Out' : ils traduisent la requête, interrogent simultanément l'API REST pour le stock, le serveur SOAP pour les commandes, et gRPC pour les robots, puis agglomèrent ces formats hétérogènes (JSON, XML, Binaire) en une unique réponse JSON unifiée."
 
 ---
 
-## Slide 11 : 4. Analyse - gRPC
+## Slide 11 : 4. Analyse - gRPC (La Performance Temps-Réel)
 **Durée estimée : 1:30**
 
-**[Aya] :** "Enfin, le domaine 4 concerne la robotique d'entrepôt, avec des contraintes de haute fréquence et de faible bande passante. Nous avons retenu gRPC."
+**[Aya] :** "Terminons avec **gRPC (gRPC Remote Procedure Calls)**, un framework open source initialement développé par Google. Sa définition rigoureuse repose sur deux piliers : l'utilisation d'HTTP/2 comme protocole de transport sous-jacent, et l'utilisation des Protocol Buffers (Protobuf) comme langage de description d'interface (IDL) et format d'échange binaire fortement typé."
 
-**[Aya] :** "Là où le JSON texte est lourd à parser, l'encodage binaire des Protocol Buffers de gRPC divise drastiquement le poids réseau. Surtout, grâce à HTTP/2, gRPC ouvre un canal de Streaming Bidirectionnel persistant, évitant le lag du TCP handshake à chaque trame, ce qui est indispensable pour de la télémétrie temps réel."
+**[Aya] :** "Le domaine 4 concerne la robotique d'entrepôt, avec des contraintes de haute fréquence. C'est là que gRPC révèle sa puissance. Contrairement à JSON et XML, l'encodage binaire compilé de Protobuf est ultra-compressé. Au-delà de la taille, le véritable atout de gRPC est son exploitation d'HTTP/2 qui permet le **Streaming Bidirectionnel**. Le robot ouvre un seul canal persistant avec le serveur central. Plutôt que de multiplier les coûteuses requêtes HTTP (le traditionnel Tour par Tour), le serveur peut 'pousser' des mises à jour de coordonnées en rafale sur le flux existant, annulant la latence de l'établissement de connexion TCP et rendant le véritable temps-réel possible."
 
 ---
 
