@@ -278,6 +278,23 @@
 \end{frame}
 
 % ======================================================================
+% TRANSITION TO TESTING
+% ======================================================================
+\begin{frame}{Validation Technique : Scénarios de Tests Pratiques}
+  \textbf{Objectif de la phase de test :}
+  Valider l'implémentation et l'intégration des 4 protocoles en conditions réelles, en sollicitant les serveurs déployés localement (via Postman et terminaux).
+
+  \vspace{1em}
+  \textbf{Périmètre de validation (Ce que nous allons exécuter et observer) :}
+  \begin{itemize}
+    \item \soapbadge~\textbf{Approvisionnement (SOAP)} : Envoi et validation d'une commande B2B via une enveloppe XML stricte (WSDL).
+    \item \restbadge~\textbf{Stocks Boutiques (REST)} : Récupération d'un inventaire produit via une méthode HTTP GET classique en JSON.
+    \item \graphqlbadge~\textbf{Pilotage (GraphQL)} : Agrégation de données complexes (Magasins + Commandes) en une seule trame POST ciblée.
+    \item \grpcbadge~\textbf{Logistique (gRPC)} : Établissement d'un flux de streaming bidirectionnel (HTTP/2) affichant la télémétrie robotique en temps réel.
+  \end{itemize}
+\end{frame}
+
+% ======================================================================
 % SECTION 4: CROSS-PARADIGM ANALYSIS
 % ======================================================================
 \section{4. Étude Comparative}
