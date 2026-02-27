@@ -320,6 +320,27 @@
   \centering\small Il n'y a pas d'API parfaite. Il n'y a que le \textbf{bon type d'API pour le bon besoin}.
 \end{frame}
 
+\begin{frame}{Point d'Amélioration : Le Rôle de l'API Gateway}
+  \textbf{Le problème actuel (Pédagogique) :}
+  \begin{itemize}
+    \item Notre projet expose 4 serveurs sur \textbf{4 ports différents} (8001, 8002, 8003, 50051).
+    \item C'est parfait pour comprendre comment chaque protocole fonctionne en isolation.
+  \end{itemize}
+  
+  \vspace{1em}
+  
+  \textbf{La solution en production (Le monde réel) :}
+  \begin{itemize}
+    \item On utiliserait une \textbf{Passerelle d'API (API Gateway)}.
+    \item Elle écoute sur \textbf{un seul port unifié} (ex: port 443 pour HTTPS) et agit comme routeur central :
+    \begin{itemize}
+      \item \texttt{/procurement} $\rightarrow$ Redirigé vers le serveur SOAP.
+      \item \texttt{/inventory} $\rightarrow$ Redirigé vers le serveur REST.
+    \end{itemize}
+    \item Résultat : L'architecture \textit{Microservices} complexe en arrière-plan est invisible pour le monde extérieur !
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Que faut-il retenir de ce POC ?}
   \begin{enumerate}
     \item \textbf{Il n'y a pas de gagnant final.} Chaque API fait son travail parfaitement en fonction du besoin. L'avenir est de savoir les utiliser au bon endroit.

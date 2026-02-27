@@ -66,3 +66,19 @@ C'est l'image parfaite pour commencer et montrer comment le système fonctionne 
 ![L'Aggregator](/Users/ayamorsli/projet-API/diagrams/07_aggregator_pattern.png)
 
 **Note pour la présentation :** *"Pour le développeur du site web (frontend), le fait d'avoir 3 APIs différentes derrière est invisible. Il ne parle qu'à GraphQL qui s'occupe de tout rassembler."*
+
+---
+
+## 9. Amélioration de l'Architecture : L'API Gateway
+
+Si on vous demande **"Pourquoi avoir utilisé 4 ports différents au lieu d'un seul ?"**, voici la réponse parfaite pour la fin de la présentation :
+
+Dans ce projet pédagogique, nous avons laissé chaque module tourner sur son propre "port" réseau (8001, 8002, etc.). Cela nous permet de bien séparer et comprendre les technologies. L'architecture est dite en **Microservices**.
+
+Cependant, en production dans le monde réel, on ajouterait une brique supplémentaire devant tout cela : **une Passerelle d'API (API Gateway)**.
+
+- Le Gateway écoute sur **un seul port unifié** (ex: le port sécurisé 443 pour HTTPS).
+- Lorsqu'un client frappe à la porte unifiée, c'est le Gateway qui joue le rôle de routeur intelligent. 
+- S'il demande l'adresse `/procurement`, le Gateway transfère sous le capot le trafic vers notre serveur SOAP sur le port 8001. 
+
+Ainsi, le client ne voit qu'une seule adresse globale, et nous pouvons garder nos systèmes (gRPC, REST, SOAP) parfaitement séparés et indépendants en arrière-plan sans perturber le réseau de l'entreprise.
