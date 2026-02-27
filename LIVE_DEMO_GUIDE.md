@@ -46,6 +46,10 @@ Voici le script (ce que vous faites + ce que vous dites) :
 - **Action :** Cliquez sur le bouton bleu **Send**.
 - **Ce que vous montrez :** La réponse apparaît en bas. Montrez le `<status>ACCEPTED</status>`.
 
+- **Action :** Cliquez ensuite sur la deuxième requête `GetRecentOrders`.
+- **Ce que vous dites :** *"Nous avons aussi codé une méthode pour consulter l'historique. C'est exactement cette méthode SOAP que notre tableau de bord GraphQL va interroger de manière transparente dans un instant."*
+- **Action :** Cliquez sur **Send** et montrez la liste des commandes renvoyée en XML.
+
 ### 2. Démontrer REST (La Simplicité pour les Boutiques)
 
 **Relation Client-Serveur-API :**
