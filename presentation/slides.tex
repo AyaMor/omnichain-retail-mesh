@@ -311,11 +311,12 @@
 % ======================================================================
 \section{5. Conclusion et Améliorations}
 
-\begin{frame}{Tableau de Synthèse Technique}
+\begin{frame}{Tableau comparatif entre les 4 API}
   \begin{table}
     \centering
     \scriptsize
     \renewcommand{\arraystretch}{1.3}
+    \resizebox{\linewidth}{!}{%
     \begin{tabular}{l >{\color{soapblue}}c >{\color{restgreen}}c >{\color{graphqlpurple}}c >{\color{grpcorange}}c}
       \toprule
       \textbf{Attributs} & \textbf{SOAP} & \textbf{REST} & \textbf{GraphQL} & \textbf{gRPC} \\
@@ -328,7 +329,8 @@
       Couplage Client & Important (Stubs WSDL) & Faible & Moyen & Important (Stubs gRPC) \\
       Cas d'Usage Cible & Transactions B2B & Opérations CRUD publiques & Agrégation de données UI & Télémétrie/Microservices internes \\
       \bottomrule
-    \end{tabular}
+    \end{tabular}%
+    }
   \end{table}
   \vspace{0.5em}
   \centering\small Il n'existe pas de standard API universel ("Silver Bullet"), uniquement des modélisations optimales pour des contraintes spécifiques.
