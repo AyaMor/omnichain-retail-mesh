@@ -69,6 +69,7 @@
 \author{Soutenance de Projet - Architecture Logicielle}
 \date{}
 \institute{}
+\titlegraphic{\includegraphics[height=1.4cm]{tsp_logo.png}}
 
 \begin{document}
 
@@ -84,10 +85,10 @@
 % ======================================================================
 \begin{frame}{Plan de la présentation}
   \begin{enumerate}
+    \item \textbf{Synthèse Comparative Principale} -- Tableau des 4 APIs \hfill \textit{2 min}
     \item \textbf{Contexte Fonctionnel} -- Définition des besoins métier \hfill \textit{2 min}
-    \item \textbf{Choix Architectural} -- Justification de l'approche Microservices \hfill \textit{3 min}
-    \item \textbf{Analyse des Services et Protocoles} -- SOAP, REST, GraphQL, gRPC \hfill \textit{6 min}
-    \item \textbf{Étude Comparative} -- Performance et cas d'usage \hfill \textit{5 min}
+    \item \textbf{Choix Architectural} -- Approche Microservices \hfill \textit{3 min}
+    \item \textbf{Analyse des Services et Protocoles} -- Plongée technique \hfill \textit{7 min}
     \item \textbf{Conclusion et Améliorations} -- API Gateway \hfill \textit{2 min}
   \end{enumerate}
   \vfill
@@ -96,9 +97,41 @@
 \end{frame}
 
 % ======================================================================
-% SECTION 1: CONTEXT
+% SECTION 1: SYNTHESE COMPARATIVE
 % ======================================================================
-\section{1. Contexte Fonctionnel}
+\section{1. Synthèse Comparative}
+
+\begin{frame}{Tableau comparatif entre les 4 API}
+  \begin{table}
+    \centering
+    \scriptsize
+    \renewcommand{\arraystretch}{1.3}
+    \resizebox{\linewidth}{!}{%
+    \begin{tabular}{l >{\color{soapblue}}c >{\color{restgreen}}c >{\color{graphqlpurple}}c >{\color{grpcorange}}c}
+      \toprule
+      \textbf{Attributs} & \textbf{SOAP} & \textbf{REST} & \textbf{GraphQL} & \textbf{gRPC} \\
+      \midrule
+      Format de Données & XML & JSON & JSON & Binaire (Protobuf) \\
+      Norme Transport & HTTP/1.1 (Action unique) & HTTP/1.1 (Verbes) & HTTP/1.1 (POST) & HTTP/2 (Multiplexé) \\
+      Typage \& Contrat & Statique Fort (WSDL/XSD) & Faible (OpenAPI en fallback) & Fort (Schéma \texttt{.graphql}) & Statique Fort (Fichier \texttt{.proto}) \\
+      Modèle d'Interaction & Requête/Réponse synchrone & Orienté Ressources (CRUD) & Requête de Graphe & RPC \& Streaming Bidirectionnel \\
+      Performance / Poids & Très lourd (Surcharge XML) & Moyen (Format verbeux) & Optimisé (Tri à la source) & Ultra léger \& Rapide \\
+      Mécanique de Cache & Inexistante & HTTP Natif (GET) & Complexe (Payload POST) & Inexistante \\
+      Flexibilité Sécurité & Haute (Normes WS-Security) & Standard (OAuth, TLS) & Standard (Nécessite contrôles) & Standard (TLS imposé par HTTP/2) \\
+      Couplage Client & Élevé (Génération de stubs) & Faible (Indépendance) & Moyen (Agilité de requêtage) & Élevé (Stubs natifs compilés) \\
+      \textbf{Cas d'Usage Idéal} & \textbf{Transactions B2B / ERP} & \textbf{APIs Publiques \& Web} & \textbf{Agrégation Vue Frontend} & \textbf{Microservices \& Temps-réel} \\
+      \bottomrule
+    \end{tabular}%
+    }
+  \end{table}
+  \vspace{0.4em}
+  \centering\small\textit{Ce tableau fait l'état des lieux macroscopique. La suite détaillera les implémentations pratiques.}
+\end{frame}
+
+% ======================================================================
+% SECTION 2: CONTEXT
+% ======================================================================
+\section{2. Contexte Fonctionnel}
 
 \begin{frame}{Modélisation du Système d'Information (Retail)}
   Modélisation du SI d'une entreprise (Retail), caractérisé par des flux hétérogènes entre \textbf{quatre domaines métiers distincts} :
@@ -157,9 +190,9 @@
 \end{frame}
 
 % ======================================================================
-% SECTION 2: ARCHITECTURE
+% SECTION 3: ARCHITECTURE
 % ======================================================================
-\section{2. Choix Architectural}
+\section{3. Choix Architectural}
 
 \begin{frame}{Justification de l'approche Microservices}
   Face à l'hétérogénéité des besoins métier, une architecture monolithique a été rejetée au profit d'une **architecture orientée Microservices**.
@@ -181,9 +214,9 @@
 \end{frame}
 
 % ======================================================================
-% SECTION 3: DEEP DIVE
+% SECTION 4: DEEP DIVE
 % ======================================================================
-\section{3. Analyse des Services et Protocoles}
+\section{4. Analyse des Services et Protocoles}
 
 % -- SOAP --
 \begin{frame}{\soapbadge~Service 1 : Approvisionnement (SOAP)}
@@ -295,63 +328,9 @@
 \end{frame}
 
 % ======================================================================
-% SECTION 4: CROSS-PARADIGM ANALYSIS
-% ======================================================================
-\section{4. Étude Comparative}
-
-\begin{frame}{Matrice décisionnelle : Orientations technologiques}
-  \begin{center}
-    \includegraphics[width=0.82\textwidth]{06_decision_tree.png}
-  \end{center}
-  \vspace{0.3em}
-  \centering\small\textit{Postulat architectural initial : REST est l'approche par défaut. Toute déviation protocollaire doit être justifiée formellement par un manque capacitaire.}
-\end{frame}
-
-\begin{frame}{Analyse de surcharge d'encodage (Payload Overhead)}
-  \begin{center}
-    \includegraphics[width=0.85\textwidth]{08_payload_comparison.png}
-  \end{center}
-  \vspace{0.3em}
-  \centering\small\textit{Pour modéliser le même objet de domaine : 1 KB (SOAP/XML) $\rightarrow$ 200 B (REST/JSON) $\rightarrow$ 50 B (gRPC/Protobuf).}
-\end{frame}
-
-\begin{frame}{Motif d'Architecture : Le Backend-For-Frontend (BFF) Aggregator}
-  \begin{center}
-    \includegraphics[width=0.82\textwidth]{07_aggregator_pattern.png}
-  \end{center}
-  \vspace{0.3em}
-  \centering\small\textit{GraphQL agit comme un adaptateur agnostique : il consolide la complexité du paysage microservices, présentant une façade unifiée au client web.}
-\end{frame}
-
-% ======================================================================
 % SECTION 5: CONCLUSION
 % ======================================================================
 \section{5. Conclusion et Améliorations}
-
-\begin{frame}{Tableau comparatif entre les 4 API}
-  \begin{table}
-    \centering
-    \scriptsize
-    \renewcommand{\arraystretch}{1.3}
-    \resizebox{\linewidth}{!}{%
-    \begin{tabular}{l >{\color{soapblue}}c >{\color{restgreen}}c >{\color{graphqlpurple}}c >{\color{grpcorange}}c}
-      \toprule
-      \textbf{Attributs} & \textbf{SOAP} & \textbf{REST} & \textbf{GraphQL} & \textbf{gRPC} \\
-      \midrule
-      Couche Transport & HTTP/1.1 & HTTP/1.1 & HTTP/1.1 & HTTP/2 \\
-      Sérialisation & XML & JSON & JSON & Binaire (Protobuf) \\
-      Typage / Contrat & Statique Fort (XSD) & Faible (OpenAPI optionnel) & Fort (Schéma GraphQL) & Statique Fort (.proto) \\
-      Modèle d'Exécution & Requête/Réponse & Requête/Réponse & Requête/Réponse (Graph) & Streaming Natif RPC \\
-      Mécanique de Cache & Aucune & Native (GET HTTP) & Limité (POST HTTP) & Aucune \\
-      Couplage Client & Important (Stubs WSDL) & Faible & Moyen & Important (Stubs gRPC) \\
-      Cas d'Usage Cible & Transactions B2B & Opérations CRUD publiques & Agrégation de données UI & Télémétrie/Microservices internes \\
-      \bottomrule
-    \end{tabular}%
-    }
-  \end{table}
-  \vspace{0.5em}
-  \centering\small Il n'existe pas de standard API universel ("Silver Bullet"), uniquement des modélisations optimales pour des contraintes spécifiques.
-\end{frame}
 
 \begin{frame}{Point d'Amélioration : Implémentation d'une API Gateway}
   \textbf{Le périmètre actuel de l'étude (Scope Pédagogique) :}
