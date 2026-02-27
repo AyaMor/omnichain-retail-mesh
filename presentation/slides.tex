@@ -222,7 +222,8 @@
 \begin{frame}{\soapbadge~Service 1 : Approvisionnement (SOAP)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Service :} Expose \texttt{SubmitOrder} pour centraliser les commandes.\\[0.6em]
+      \textbf{Service :} Expose \texttt{SubmitOrder} pour centraliser les commandes.\\
+      \textbf{Stack Technique :} Python (Framework \texttt{Spyne}, Serveur WSGI).\\[0.6em]
       \textbf{Choix de SOAP :}
       \begin{itemize}
         \item \textbf{Intégrité Stricte (XSD) :} Le WSDL force l'arborescence et les types ("Fail-fast").
@@ -245,7 +246,8 @@
 \begin{frame}{\restbadge~Service 2 : Stocks Routiques (REST)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Service :} Gère l'inventaire via HTTP (\texttt{GET /inventory}, \texttt{PATCH /inventory/\{sku\}}).\\[0.6em]
+      \textbf{Service :} Gère l'inventaire via HTTP (\texttt{GET /inventory}, \texttt{PATCH /inventory/\{sku\}}).\\
+      \textbf{Stack Technique :} Python (Framework \texttt{FastAPI}, Serveur \texttt{Uvicorn} ASGI).\\[0.6em]
       \textbf{Motivations du choix de REST :}
       \begin{itemize}
         \item \textbf{Accessibilité :} Standard du web fondé sur HTTP/JSON, facilitant l'intégration par les partenaires.
@@ -268,7 +270,8 @@
 \begin{frame}{\graphqlbadge~Service 3 : Interface Reporting (GraphQL)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Service :} Point d'entrée \texttt{/graphql} agrégeant magasins, employés et commandes.\\[0.6em]
+      \textbf{Service :} Point d'entrée \texttt{/graphql} agrégeant magasins, employés et commandes.\\
+      \textbf{Stack Technique :} Python (Bibliothèque \texttt{Strawberry} sur FastAPI).\\[0.6em]
       \textbf{Choix de GraphQL :}
       \begin{itemize}
         \item \textbf{Résout "N+1 Queries" :} Demande un arbre de données entier via une seule requête POST, évitant de multiplier les appels réseau HTTP.
@@ -291,7 +294,8 @@
 \begin{frame}{\grpcbadge~Service 4 : Télémétrie Automatisée (gRPC)}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \textbf{Service :} Communication robotique \textit{Machine-to-Machine} à très haute fréquence.\\[0.6em]
+      \textbf{Service :} Communication robotique \textit{Machine-to-Machine} à très haute fréquence.\\
+      \textbf{Stack Technique :} Python (Lib. native \texttt{grpcio} \& Protobuf).\\[0.6em]
       \textbf{Choix de gRPC :}
       \begin{itemize}
         \item \textbf{Efficience binaire :} Protobuf divise par 6 la taille du payload par rapport au JSON. Vital pour réseaux sans-fil (entrepôt).
